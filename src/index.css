@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font imports */
+/*
+@font-face {
+  font-family: "Jalapeno";
+  src: url("./assests/font/Jalapeño.ttf") format("truetype"),
+    url("./assests/font/Jalapeño.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+*/
+
+/* Disabled temporarily: Century fonts cause OTS decode errors in Chrome */
+/*
+@font-face {
+  font-family: "Century";
+  src: url("./assests/font/Century_Normal.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Century";
+  src: url("./assests/font/Century_Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+*/
+
+/* @font-face {
+  font-family: "Century";
+  src: url("./assests/font/Century_Bold_Italic.ttf") format("truetype");
+  font-weight: bold;
+  font-style: italic;
+} */
+
+body {
+  /* Use system serif as fallback until custom fonts are fixed */
+  font-family: serif;
+}
+
+/* Custom font classes */
+.title {
+  /* Fall back until Jalapeno font path is normalized */
+  font-family: sans-serif;
+}
+
+.century {
+  /* Temporarily fallback to serif */
+  font-family: serif;
+}
+
+/* Outline text effect for last word */
+.title-outline {
+  /* Fall back until Jalapeno font path is normalized */
+  font-family: sans-serif;
+  -webkit-text-stroke: 2px white;
+  -webkit-text-fill-color: transparent;
+  text-stroke: 2px white;
+  color: transparent;
+}
