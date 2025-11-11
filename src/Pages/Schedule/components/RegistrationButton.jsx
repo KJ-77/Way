@@ -96,9 +96,6 @@ const RegistrationButton = ({
    * SESSION SELECTION LOGIC
    */
 
-  // Check if a session is selected
-  const isSessionSelected = !!selectedSessionId;
-
   // Check if already registered for this specific session
   const isAlreadyRegisteredForThisSession =
     selectedSessionId && registeredSessionIds.includes(selectedSessionId);

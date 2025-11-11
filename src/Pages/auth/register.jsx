@@ -17,10 +17,8 @@ const Register = () => {
   const confirmPassword = useInput(
     (val) => val === password.value && val.length >= 8
   );
-  const { data, loading, error, postData } = usePost();
+  const {loading, error, postData } = usePost();
   const [submitted, setSubmitted] = useState(false);
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [registeredEmail, setRegisteredEmail] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState(""); // Add this line
   const navigate = useNavigate();
@@ -61,8 +59,6 @@ const Register = () => {
       // Save user data and token using context
 
       // Show verification modal instead of redirecting immediately
-      setRegisteredEmail(email.value);
-      setShowVerificationModal(true);
     } catch (err) {
       console.error("Registration error:", err);
 

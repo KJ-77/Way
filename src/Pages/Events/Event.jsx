@@ -24,12 +24,12 @@ const Event = () => {
 
   const getdata = useCallback(async () => {
     await fetchData("/event");
-  }, []);
+  }, [fetchData]);
 
   useEffect(() => {
     getdata();
-  }, []);
-
+  }, [getdata]);
+  
   // Clear message after 5 seconds
   useEffect(() => {
     if (statusMessage.text) {

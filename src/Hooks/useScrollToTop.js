@@ -11,5 +11,5 @@ export default function useScrollToTop(options) {
         : { top: 0, left: 0, behavior: "smooth" };
 
     window.scrollTo(scrollOptions);
-  }, [pathname]);
+  }, [pathname, options]);
 }

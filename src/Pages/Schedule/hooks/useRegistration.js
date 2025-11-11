@@ -36,24 +36,24 @@ const useRegistration = () => {
    *
    * @returns {boolean} True if user can register
    */
-  const canUserRegister = () => {
-    // T001, T011: Check if logged in
-    if (!isLoggedIn) {
-      return { canRegister: false, reason: "NOT_LOGGED_IN" };
-    }
+  // const checkAuthState = () => {  use this later if needed to check auth state
+  //   // T001-T003: Check if user is logged in
+  //   if (!isLoggedIn) {
+  //     return { canRegister: false, reason: "NOT_LOGGED_IN" };
+  //   }
 
-    // T011, T012: Check if verified
-    if (!user?.verified) {
-      return { canRegister: false, reason: "NOT_VERIFIED" };
-    }
+  //   // T011, T012: Check if verified
+  //   if (!user?.verified) {
+  //     return { canRegister: false, reason: "NOT_VERIFIED" };
+  //   }
 
-    // T031-T050: Check if token exists
-    if (!token) {
-      return { canRegister: false, reason: "NO_TOKEN" };
-    }
+  //   // T031-T050: Check if token exists
+  //   if (!token) {
+  //     return { canRegister: false, reason: "NO_TOKEN" };
+  //   }
 
-    return { canRegister: true };
-  };
+  //   return { canRegister: true };
+  // };
 
   /**
    * Handle token expiration and 401/403 errors
@@ -149,7 +149,9 @@ const useRegistration = () => {
             };
           });
 
-        console.log(`✅ Loaded ${result.data.registrations.length} registrations`);
+        console.log(
+          `✅ Loaded ${result.data.registrations.length} registrations`
+        );
         console.log("📊 Status map:", statusMap);
 
         // T124, T136, T149: Update state (persists across refresh via re-fetch on mount)
@@ -205,7 +207,9 @@ const useRegistration = () => {
    * @param {string} sessionId - ID of the specific session
    */
   const handleRegister = async (scheduleId, sessionId) => {
-    console.log(`🎯 Registration attempt: Schedule ${scheduleId}, Session ${sessionId}`);
+    console.log(
+      `🎯 Registration attempt: Schedule ${scheduleId}, Session ${sessionId}`
+    );
 
     /**
      * PRE-REGISTRATION VALIDATION
@@ -268,8 +272,11 @@ const useRegistration = () => {
 
     if (registrationStatuses[registrationKey]) {
       console.log(`ℹ️ Already registered for ${registrationKey}`);
-      console.log("Current registered sessions:", Object.keys(registrationStatuses)
-        .filter((k) => k.startsWith(`${scheduleId}:`))
+      console.log(
+        "Current registered sessions:",
+        Object.keys(registrationStatuses).filter((k) =>
+          k.startsWith(`${scheduleId}:`)
+        )
       );
 
       // User already registered for this exact session
@@ -289,7 +296,9 @@ const useRegistration = () => {
       // Rejected status - allow re-registration
       else if (existingReg.status === "rejected") {
         // Allow re-registration for rejected registrations
-        console.log("Previous registration was rejected, allowing re-registration");
+        console.log(
+          "Previous registration was rejected, allowing re-registration"
+        );
         // Don't return, continue with registration
       }
 
@@ -349,7 +358,6 @@ const useRegistration = () => {
       setTimeout(() => {
         fetchUserRegistrations();
       }, 1000);
-
     } catch (error) {
       console.error("❌ Registration error:", error);
       console.log("Error details:", {
@@ -401,11 +409,13 @@ const useRegistration = () => {
       }
       // T201-T204: Handle session already started
       else if (error.message && error.message.includes("already started")) {
-        errorMessage = "This session has already started. Registration is closed.";
+        errorMessage =
+          "This session has already started. Registration is closed.";
       }
       // T295-T296: Handle not found errors
       else if (error.status === 404) {
-        errorMessage = "Schedule or session not found. It may have been removed.";
+        errorMessage =
+          "Schedule or session not found. It may have been removed.";
       }
       // T271-T280: Handle server errors
       else if (error.status === 500) {
@@ -418,7 +428,8 @@ const useRegistration = () => {
       }
       // T271-T280: Handle network errors
       else if (!error.status) {
-        errorMessage = "Network error. Please check your connection and try again.";
+        errorMessage =
+          "Network error. Please check your connection and try again.";
       }
       // Use server message if available
       else if (error.message) {
@@ -441,7 +452,9 @@ const useRegistration = () => {
    * @param {string} sessionId - ID of the full session
    */
   const handleRequestFullClass = async (scheduleId, sessionId) => {
-    console.log(`🎯 Full class request: Schedule ${scheduleId}, Session ${sessionId}`);
+    console.log(
+      `🎯 Full class request: Schedule ${scheduleId}, Session ${sessionId}`
+    );
 
     /**
      * AUTHENTICATION CHECKS
@@ -478,7 +491,9 @@ const useRegistration = () => {
      */
 
     try {
-      console.log(`📤 Submitting full class request for ${scheduleId}:${sessionId}`);
+      console.log(
+        `📤 Submitting full class request for ${scheduleId}:${sessionId}`
+      );
 
       await postWithAuth("/registrations/request-full-class", token, {
         scheduleId,
@@ -509,7 +524,6 @@ const useRegistration = () => {
       setTimeout(() => {
         fetchUserRegistrations();
       }, 1000);
-
     } catch (error) {
       console.error("❌ Full class request error:", error);
 
@@ -537,8 +551,7 @@ const useRegistration = () => {
 
         // Refresh to get server state
         fetchUserRegistrations();
-      }
-      else if (error.message) {
+      } else if (error.message) {
         errorMessage = error.message;
       }
 
@@ -556,22 +569,22 @@ const useRegistration = () => {
 
   return {
     // Registration state
-    registeredScheduleIds,      // Array of schedule IDs user is registered for
-    registrationStatuses,        // Map of scheduleId:sessionId to {status, paymentStatus, rejectionReason}
+    registeredScheduleIds, // Array of schedule IDs user is registered for
+    registrationStatuses, // Map of scheduleId:sessionId to {status, paymentStatus, rejectionReason}
 
     // User feedback
-    message,                     // {type: 'success'|'error'|'info', text: string}
+    message, // {type: 'success'|'error'|'info', text: string}
 
     // Loading state
-    authLoading,                 // Boolean indicating API call in progress
+    authLoading, // Boolean indicating API call in progress
 
     // Actions
-    handleRegister,              // Function to register for a session
-    handleRequestFullClass,      // Function to request spot in full session
+    handleRegister, // Function to register for a session
+    handleRequestFullClass, // Function to request spot in full session
 
     // Authentication state
-    isLoggedIn,                  // Boolean
-    user,                        // User object with verified flag
+    isLoggedIn, // Boolean
+    user, // User object with verified flag
   };
 };
 

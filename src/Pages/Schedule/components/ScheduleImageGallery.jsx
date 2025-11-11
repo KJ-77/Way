@@ -43,7 +43,7 @@ const ScheduleImageGallery = ({ images }) => {
           <SwiperSlide className="flex items-center justify-center" key={index}>
             <img
               src={`${IMAGE_URL}${image}`}
-              alt={`Schedule image ${index + 1}`}
+              alt={`Schedule ${index + 1}`}
               className="w-full h-[400px] rounded-[62px]  object-cover"
             />
           </SwiperSlide>

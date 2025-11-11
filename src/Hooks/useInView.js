@@ -66,6 +66,7 @@ export default function useInView(
     };
   }, [
     once,
+    options,
     options?.threshold,
     options?.root,
     options?.rootMargin,

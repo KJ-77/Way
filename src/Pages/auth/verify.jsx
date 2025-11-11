@@ -1,7 +1,6 @@
 import React, { useRef, useState, useContext } from "react";
-import { useNavigate, useLocation, Link, Navigate } from "react-router-dom";
+import { useNavigate, Link} from "react-router-dom";
 import Button from "Components/form/Button";
-import FormGroup from "Components/form/FormGroup";
 import usePost from "Hooks/usePost";
 
 import AuthContext from "Context/AuthContext";

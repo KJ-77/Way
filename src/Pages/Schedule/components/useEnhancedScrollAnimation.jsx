@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect} from "react";
 import { useInView, useAnimation } from "framer-motion";
 
 const useEnhancedScrollAnimation = (threshold = 0.1, delay = 0) => {

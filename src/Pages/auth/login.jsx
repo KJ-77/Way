@@ -11,7 +11,7 @@ import AuthContext from "Context/AuthContext";
 const Login = () => {
   const email = useInput((val) => val.includes("@"));
   const password = useInput((val) => val.length >= 8);
-  const { data, loading, error, postData } = usePost();
+  const {loading, error, postData } = usePost();
   const [submitted, setSubmitted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState(""); // Add error message state

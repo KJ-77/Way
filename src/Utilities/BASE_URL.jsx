@@ -6,4 +6,3 @@ export const IMAGE_URL = "http://localhost:5001/";
 
 export default BASE_URL;
 
-const x = "SSMYA3T76NS1BGAP6HV8A7QM";
