@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5001/api";
+const BASE_URL = "http://api.waybeirut.com/api";
 export const IMAGE_URL = "http://localhost:5001/";
 
 // const BASE_URL = 'https://api.zenith-eng.site/api'
