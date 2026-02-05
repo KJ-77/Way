@@ -1,9 +1,9 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-import { ArrowLeft, ArrowRight, ArrowRightIcon } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { IMAGE_URL } from "Utilities/BASE_URL";
+import Button from "Components/form/Button";
 
 // Import Swiper styles
 import "swiper/css";
@@ -45,22 +45,12 @@ const AboutUs = ({ aboutUsData }) => {
           </h2>
           <p className="lg:w-3/4 text-xl text-primary">{page_description}</p>
 
-          {/* Action Buttons */}
-          <div className="mt-10 flex flex-wrap items-center gap-x-8">
-            <Link
-              to="/auth/register"
-              className="text-sm underline flex items-center hover:text-secondary transition-colors duration-200"
-            >
-              Become a member
-              <ArrowRightIcon size={14} className="ml-2" />
-            </Link>
-            <Link
-              to="/schedule"
-              className="text-sm underline flex items-center hover:text-secondary transition-colors duration-200"
-            >
+          {/* Action Button */}
+          <div className="mt-10">
+            <Button to="/classes" variant="link" size="sm">
               Book now
-              <ArrowRightIcon size={14} className="ml-2" />
-            </Link>
+              <ArrowRight size={14} />
+            </Button>
           </div>
         </div>
 
@@ -161,7 +151,7 @@ const AboutUs = ({ aboutUsData }) => {
                           <img
                             src={`${IMAGE_URL}${image}`}
                             alt={`Our Tutors ${index + 1}`}
-                            className="w-full   h-[400px] lg:h-[600px] object-cover"
+                            className="w-full h-[400px] lg:h-[600px] object-cover"
                           />
                         </SwiperSlide>
                       ))}

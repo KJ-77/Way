@@ -1,16 +1,20 @@
-import React from "react";
+import React, { useRef } from "react";
 import { IMAGE_URL } from "Utilities/BASE_URL";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
-import "swiper/css/effect-fade";
+import "swiper/css/navigation";
 // Import required modules
-import { Pagination } from "swiper/modules";
+import { Pagination, Navigation } from "swiper/modules";
 
 const ScheduleImageGallery = ({ images }) => {
   const hasImages = images && images.length > 0;
+  const hasMultiple = images && images.length > 1;
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
   if (!hasImages) {
     return (
@@ -21,13 +25,19 @@ const ScheduleImageGallery = ({ images }) => {
   }
 
   return (
-    <div className="swiper-container">
+    <div className="swiper-container group relative">
       <style jsx="true">{`
         .swiper-pagination-bullet {
-          background: #000;
+          background: #421f19;
+          opacity: 0.3;
         }
         .swiper-pagination-bullet-active {
-          background: #000;
+          background: #421f19;
+          opacity: 1;
+        }
+        .swiper-button-disabled {
+          opacity: 0.3 !important;
+          cursor: default !important;
         }
       `}</style>
       <Swiper
@@ -35,20 +45,54 @@ const ScheduleImageGallery = ({ images }) => {
         pagination={{
           dynamicBullets: true,
         }}
-        modules={[Pagination]}
-        loop={true}
-        className="w-full  rounded-md overflow-hidden"
+        navigation={
+          hasMultiple
+            ? {
+                prevEl: prevRef.current,
+                nextEl: nextRef.current,
+              }
+            : false
+        }
+        onBeforeInit={(swiper) => {
+          if (hasMultiple && swiper.params.navigation) {
+            swiper.params.navigation.prevEl = prevRef.current;
+            swiper.params.navigation.nextEl = nextRef.current;
+          }
+        }}
+        modules={[Pagination, Navigation]}
+        loop={hasMultiple}
+        className="w-full rounded-md overflow-hidden"
       >
         {images.map((image, index) => (
           <SwiperSlide className="flex items-center justify-center" key={index}>
             <img
               src={`${IMAGE_URL}${image}`}
-              alt={`Schedule ${index + 1}`}
-              className="w-full h-[400px] rounded-[62px]  object-cover"
+              alt={`Class ${index + 1}`}
+              className="w-full h-[400px] rounded-[62px] object-cover"
             />
           </SwiperSlide>
         ))}
       </Swiper>
+
+      {/* Custom Navigation Arrows */}
+      {hasMultiple && (
+        <>
+          <button
+            ref={prevRef}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-primary shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white hover:scale-105"
+            aria-label="Previous image"
+          >
+            <CaretLeft size={18} weight="bold" />
+          </button>
+          <button
+            ref={nextRef}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-primary shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white hover:scale-105"
+            aria-label="Next image"
+          >
+            <CaretRight size={18} weight="bold" />
+          </button>
+        </>
+      )}
     </div>
   );
 };

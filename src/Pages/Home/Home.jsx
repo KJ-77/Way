@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
 import useFetch from "Hooks/useFetch";
 import { DotsLoader } from "Components/RequestHandler";
 import Container from "Components/Container/Container";
+import Button from "Components/form/Button";
 import { ArrowRight, WhatsappLogo, InstagramLogo } from "@phosphor-icons/react";
 import AboutUs from "./AboutUs";
 import heroImage from "assests/hero-image.jpg";
@@ -25,17 +25,8 @@ const Home = () => {
 
   return (
     <main className="relative">
-      {/* Hero Video - Full Screen */}
       {/* Hero Section */}
       <div className="relative h-screen w-full overflow-hidden">
-        {/* <video
-          className="absolute top-0 left-0 w-full h-full object-cover z-0"
-          src={video}
-          autoPlay
-          muted
-          loop
-        /> */}
-
         <img
           src={heroImage}
           alt="hero"
@@ -60,14 +51,14 @@ const Home = () => {
         </div>
 
         {/* Overlay for better text visibility */}
-        <div className="absolute inset-0 bg-primary/20  z-10"></div>
+        <div className="absolute inset-0 bg-primary/20 z-10"></div>
 
         {/* Hero Content */}
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-end mb-10 sm:mb-16 md:mb-20">
           <Container>
             <div className="flex flex-col text-white px-4 sm:px-0">
               {data?.data?.[0]?.title ? (
-                <h1 className=" text-3xl sm:text-4xl md:text-7xl mb-2 w-full lg:w-1/2 ">
+                <h1 className="text-3xl sm:text-4xl md:text-7xl mb-2 w-full lg:w-1/2">
                   {(() => {
                     const title = data.data[0].title;
                     const words = title.split(" ");
@@ -94,25 +85,27 @@ const Home = () => {
               ) : null}
             </div>
             <div className="mt-4 sm:mt-14 flex flex-col sm:flex-row items-center justify-center gap-y-3 sm:gap-y-0 gap-x-4 sm:gap-x-6 px-4 sm:px-0 lg:w-1/2">
-              <Link
-                to={"/auth/register"}
-                className="w-full sm:w-auto px-3 text-sm py-1  rounded-lg border border-white flex items-center justify-center sm:justify-start gap-x-3 text-white hover:bg-white hover:text-black transition-all duration-300"
+              <Button
+                to="/auth/register"
+                variant="outline-white"
+                size="sm"
+                className="w-full sm:w-auto"
               >
                 Become a member
                 <ArrowRight size={16} />
-              </Link>
-              <Link
-                to={"/schedule"}
-                className="w-full sm:w-auto px-5 text-sm py-1  rounded-lg border border-white flex items-center justify-center sm:justify-start gap-x-3 bg-white text-black hover:bg-transparent hover:text-white transition-all duration-300"
+              </Button>
+              <Button
+                to="/classes"
+                variant="outline-white"
+                size="sm"
+                className="w-full sm:w-auto bg-white text-primary hover:bg-transparent hover:text-white"
               >
                 Book now
-                {/* <ArrowRight size={16} /> */}
-              </Link>
+              </Button>
             </div>
           </Container>
         </div>
       </div>
-      {/* Hero Section */}
 
       {/* Atelier Section */}
       <section className="py-secondary lg:py-primary bg-white">
@@ -128,26 +121,16 @@ const Home = () => {
               molding, and exploring without limits.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                to="/auth/register"
-                className="px-6 py-2 text-sm border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-300 flex items-center gap-2"
-              >
-                Become a member
-                <ArrowRight size={16} />
-              </Link>
-              <Link
-                to="/schedule"
-                className="px-6 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 transition-all duration-300 flex items-center gap-2"
-              >
+              <Button to="/classes" variant="outline" size="md">
                 Book now
                 <ArrowRight size={16} />
-              </Link>
+              </Button>
             </div>
           </div>
 
           {/* Visual Grid - 3 Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-12 lg:mb-16">
-            {/* Large Workshop Image - Full Width on Mobile, Spans 2 Cols on Desktop */}
+            {/* Large Workshop Image */}
             <div className="lg:col-span-2 rounded-2xl lg:rounded-[32px] overflow-hidden h-[300px] lg:h-[400px] bg-gray-200">
               <div className="w-full h-full flex items-center justify-center text-gray-500">
                 [Workshop Image - People around table doing activities]
@@ -212,27 +195,24 @@ const Home = () => {
         </Container>
       </section>
 
-      {/* Our Schedule Section */}
+      {/* Our Classes Section */}
       <section className="py-secondary lg:py-primary bg-white">
         <Container>
           {/* Section Header */}
           <div className="text-center mb-12 lg:mb-16">
             <h2 className="text-3xl lg:text-5xl mb-4">
-              Our <span className="italic">Schedule</span>
+              Our <span className="italic">Classes</span>
             </h2>
             <p className="text-gray-700 text-lg mb-6">
-              Discover our schedule and join a session that inspires you
+              Discover our classes and join a session that inspires you
             </p>
-            <Link
-              to="/schedule"
-              className="text-sm text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-2"
-            >
+            <Button to="/classes" variant="link" size="sm">
               Book now
               <ArrowRight size={14} />
-            </Link>
+            </Button>
           </div>
 
-          {/* Schedule Grid - 6 Cards */}
+          {/* Classes Grid - 6 Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {/* Card 1: Handbuilding (The Explorer) */}
             <div className="flex flex-col">
@@ -252,22 +232,10 @@ const Home = () => {
                 A pottery technique where clay is molded by hand into unique
                 shapes and textures.
               </p>
-              <div className="flex items-center gap-4 text-sm">
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Download Schedule
-                  <ArrowRight size={12} />
-                </Link>
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Book now
-                  <ArrowRight size={12} />
-                </Link>
-              </div>
+              <Button to="/classes" variant="link" size="sm" className="self-start">
+                Book now
+                <ArrowRight size={12} />
+              </Button>
             </div>
 
             {/* Card 2: Wheel Throwing (The Explorer) */}
@@ -288,22 +256,10 @@ const Home = () => {
                 Wheel throwing is shaping clay on a spinning wheel to create
                 smooth, symmetrical forms.
               </p>
-              <div className="flex items-center gap-4 text-sm">
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Download Schedule
-                  <ArrowRight size={12} />
-                </Link>
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Book now
-                  <ArrowRight size={12} />
-                </Link>
-              </div>
+              <Button to="/classes" variant="link" size="sm" className="self-start">
+                Book now
+                <ArrowRight size={12} />
+              </Button>
             </div>
 
             {/* Card 3: Sculpting (All levels) */}
@@ -324,22 +280,10 @@ const Home = () => {
                 Sculpting is shaping and carving clay or other materials to
                 create expressive, three-dimensional art
               </p>
-              <div className="flex items-center gap-4 text-sm">
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Download Schedule
-                  <ArrowRight size={12} />
-                </Link>
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Book now
-                  <ArrowRight size={12} />
-                </Link>
-              </div>
+              <Button to="/classes" variant="link" size="sm" className="self-start">
+                Book now
+                <ArrowRight size={12} />
+              </Button>
             </div>
 
             {/* Card 4: Open Studio */}
@@ -360,22 +304,10 @@ const Home = () => {
                 Open Studio is a free-creation where you use our space, tools,
                 and materials to work at your own pace.
               </p>
-              <div className="flex items-center gap-4 text-sm">
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Download Schedule
-                  <ArrowRight size={12} />
-                </Link>
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Book now
-                  <ArrowRight size={12} />
-                </Link>
-              </div>
+              <Button to="/classes" variant="link" size="sm" className="self-start">
+                Book now
+                <ArrowRight size={12} />
+              </Button>
             </div>
 
             {/* Card 5: Painting on Canvas */}
@@ -396,22 +328,10 @@ const Home = () => {
                 Painting on canvas is expressing ideas and emotions through
                 color and texture on a blank surface
               </p>
-              <div className="flex items-center gap-4 text-sm">
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Download Schedule
-                  <ArrowRight size={12} />
-                </Link>
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Book now
-                  <ArrowRight size={12} />
-                </Link>
-              </div>
+              <Button to="/classes" variant="link" size="sm" className="self-start">
+                Book now
+                <ArrowRight size={12} />
+              </Button>
             </div>
 
             {/* Card 6: Handbuilding (Mastery) */}
@@ -433,33 +353,18 @@ const Home = () => {
                 complex forms, refined techniques, and more creative freedom in
                 shaping clay.
               </p>
-              <div className="flex items-center gap-4 text-sm">
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Download Schedule
-                  <ArrowRight size={12} />
-                </Link>
-                <Link
-                  to="/schedule"
-                  className="text-primary underline hover:text-secondary transition-colors inline-flex items-center gap-1"
-                >
-                  Book now
-                  <ArrowRight size={12} />
-                </Link>
-              </div>
+              <Button to="/classes" variant="link" size="sm" className="self-start">
+                Book now
+                <ArrowRight size={12} />
+              </Button>
             </div>
           </div>
 
           {/* View More Button */}
           <div className="text-center">
-            <Link
-              to="/schedule"
-              className="inline-block px-8 py-2 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-300"
-            >
+            <Button to="/classes" variant="outline" size="md">
               View more
-            </Link>
+            </Button>
           </div>
         </Container>
       </section>

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "Pages/Home/Home";
 
 // context
@@ -30,7 +30,8 @@ const App = () => {
         <Header />
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/classes" element={<Schedule />} />
+          <Route path="/schedule" element={<Navigate to="/classes" replace />} />
           <Route path="/events" element={<Event />} />
 
           {/* Auth Routes */}

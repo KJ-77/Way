@@ -242,7 +242,7 @@ const ScheduleCard = ({
         {/* Registration Button */}
         <div className="mt-auto flex items-center gap-6">
           <button className="text-primary font-medium text-sm underline">
-            Download schedule
+            Download class schedule
           </button>
           <RegistrationButton
             isRegistered={!!regStatus}

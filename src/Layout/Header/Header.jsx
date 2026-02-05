@@ -169,7 +169,7 @@ const Header = () => {
               </div>
               <div className="relative">
                 <Link
-                  to="/schedule"
+                  to="/classes"
                   className={`${
                     isScrolled
                       ? "text-gray-900"
@@ -182,7 +182,7 @@ const Header = () => {
                     isScrolled ? "text-sm" : "text-sm"
                   }`}
                 >
-                  Schedule
+                  Classes
                 </Link>
                 {!isScrolled && (
                   <ul
@@ -192,26 +192,18 @@ const Header = () => {
                   >
                     <li>
                       <Link
-                        to="/schedule"
+                        to="/classes"
                         className="hover:opacity-70 transition-opacity block"
                       >
-                        Classes
+                        View classes
                       </Link>
                     </li>
                     <li>
                       <Link
-                        to="/schedule"
+                        to="/classes"
                         className="hover:opacity-70 transition-opacity block"
                       >
                         Book now
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/auth/register"
-                        className="hover:opacity-70 transition-opacity block"
-                      >
-                        Become a member
                       </Link>
                     </li>
                   </ul>
@@ -360,7 +352,7 @@ const Header = () => {
                     label: "Community",
                     delay: "100ms",
                   },
-                  { to: "/schedule", label: "Schedule", delay: "200ms" },
+                  { to: "/classes", label: "Classes", delay: "200ms" },
                   { to: "/events", label: "Events", delay: "300ms" },
                   { to: "/shop", label: "Shop", delay: "400ms" },
                   {

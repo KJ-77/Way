@@ -136,7 +136,7 @@ const Footer = () => {
           </div>
           {/* 1 */}
           <div>
-            <p className="text-xl mb-6 ">Stay connected</p>
+            <p className="text-xl mb-6 ">Subscribe to newsletter</p>
 
             <form onSubmit={handleSubmit} className="flex flex-col  gap-3">
               <div className="text-xs flex">

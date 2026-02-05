@@ -72,11 +72,11 @@ const Schedule = () => {
         {/* Title and Description Section */}
         <div className="flex flex-col md:items-end justify-center gap-4 lg:gap-8 text-primary md:w-3/4  lg:w-[60%]  ">
           <h1 className="me:text-end lg:text-5xl text-3xl font-light  ">
-            Our <span className="italic">Schedule</span>
+            Our <span className="italic">Classes</span>
           </h1>
 
           <p className="text-xl lg:text-2xl">
-            Discover our schedule and join a session that inspires you
+            Discover our classes and join a session that inspires you
           </p>
         </div>
 
