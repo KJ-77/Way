@@ -112,8 +112,12 @@ const Header = () => {
               <img
                 src={`${showWhiteOnHome ? whiteLogo : blackLogo}`}
                 alt="logo"
-                className={`transition-all duration-300  ${
-                  isScrolled ? "w-20 h-20" : "w-20 h-20 lg:w-28 lg:h-28"
+                width={isScrolled ? 80 : 112}
+                height={isScrolled ? 80 : 112}
+                className={`transition-all duration-300 ${
+                  isScrolled
+                    ? "w-[80px] h-[80px]"
+                    : "w-[80px] h-[80px] lg:w-[112px] lg:h-[112px]"
                 }`}
               />
             </Link>
@@ -143,7 +147,7 @@ const Header = () => {
                     <li>
                       <button
                         onClick={() => scrollToSection("our-space")}
-                        className="hover:opacity-70 transition-opacity"
+                        className="hover:text-secondary transition-colors duration-300 cursor-pointer"
                       >
                         Our Space
                       </button>
@@ -151,7 +155,7 @@ const Header = () => {
                     <li>
                       <button
                         onClick={() => scrollToSection("our-tutors")}
-                        className="hover:opacity-70 transition-opacity"
+                        className="hover:text-secondary transition-colors duration-300 cursor-pointer"
                       >
                         Our Tutors
                       </button>
@@ -159,7 +163,7 @@ const Header = () => {
                     <li>
                       <button
                         onClick={() => scrollToSection("our-coffeebar")}
-                        className="hover:opacity-70 transition-opacity"
+                        className="hover:text-secondary transition-colors duration-300 cursor-pointer"
                       >
                         Our CoffeeBar
                       </button>
@@ -193,7 +197,7 @@ const Header = () => {
                     <li>
                       <Link
                         to="/classes"
-                        className="hover:opacity-70 transition-opacity block"
+                        className="hover:text-secondary transition-colors duration-300 block"
                       >
                         View classes
                       </Link>
@@ -201,7 +205,7 @@ const Header = () => {
                     <li>
                       <Link
                         to="/classes"
-                        className="hover:opacity-70 transition-opacity block"
+                        className="hover:text-secondary transition-colors duration-300 block"
                       >
                         Book now
                       </Link>
@@ -267,7 +271,11 @@ const Header = () => {
             </nav>
 
             <button
-              className="lg:hidden flex items-center justify-center relative p-2 group"
+              className={`lg:hidden flex items-center justify-center relative p-3 rounded-lg group transition-all duration-300 ${
+                showWhiteOnHome
+                  ? "hover:bg-white/10"
+                  : "hover:bg-black/5"
+              }`}
               onClick={() => setIsDrawerOpen(true)}
               aria-label="Open menu"
             >

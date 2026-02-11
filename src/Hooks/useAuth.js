@@ -1,5 +1,30 @@
 import { useState } from "react";
-import BASE_URL from "Utilities/BASE_URL";
+import BASE_URL, { MOCK_MODE } from "Utilities/BASE_URL";
+import {
+  mockMyRegistrations,
+  mockRegistrationResponse,
+  mockSuccessResponse,
+} from "data/mockData";
+
+/**
+ * Mock response resolver for authenticated endpoints
+ */
+const getMockAuthGet = (url) => {
+  if (url.includes("/registrations/my-registrations"))
+    return mockMyRegistrations;
+
+  // Fallback
+  return { data: [] };
+};
+
+const getMockAuthPost = (url) => {
+  if (url.includes("/registrations/request-full-class"))
+    return mockRegistrationResponse;
+  if (url.includes("/registrations")) return mockRegistrationResponse;
+
+  // Fallback
+  return mockSuccessResponse;
+};
 
 const useAuth = () => {
   const [data, setData] = useState(null);
@@ -10,14 +35,12 @@ const useAuth = () => {
   const parseErrorResponse = async (response) => {
     try {
       const errorData = await response.json();
-      // Return a structured error object with status code and message
       return {
         status: response.status,
         message: errorData.message || "Network response was not ok",
         data: errorData,
       };
     } catch (e) {
-      // If we can't parse the JSON, return a generic error
       return {
         status: response.status,
         message: "Network response was not ok",
@@ -29,6 +52,23 @@ const useAuth = () => {
   const fetchWithAuth = async (url, token) => {
     setLoading(true);
     setError(null);
+
+    // Mock mode
+    if (MOCK_MODE) {
+      try {
+        await new Promise((r) => setTimeout(r, 200));
+        const result = getMockAuthGet(url);
+        setData(result);
+        return result;
+      } catch (err) {
+        setError(err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Real mode
     try {
       const response = await fetch(`${BASE_URL}${url}`, {
         headers: {
@@ -39,7 +79,6 @@ const useAuth = () => {
 
       if (!response.ok) {
         const errorObj = await parseErrorResponse(response);
-        console.log("API Error Response:", errorObj); // Add detailed logging
         setError(errorObj);
         throw errorObj;
       }
@@ -48,10 +87,7 @@ const useAuth = () => {
       setData(result);
       return result;
     } catch (error) {
-      // If it's already our parsed error, just throw it
       if (error.status) throw error;
-
-      // Otherwise set and throw a generic error
       const genericError = {
         status: 500,
         message: error.message || "An unknown error occurred",
@@ -63,11 +99,27 @@ const useAuth = () => {
     }
   };
 
-  // For POST requests with authentication (with or without data)
+  // For POST requests with authentication
   const postWithAuth = async (url, token, data = null) => {
     setLoading(true);
     setError(null);
 
+    // Mock mode
+    if (MOCK_MODE) {
+      try {
+        await new Promise((r) => setTimeout(r, 400));
+        const result = getMockAuthPost(url);
+        setData(result);
+        return result;
+      } catch (err) {
+        setError(err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Real mode
     try {
       const headers = {
         "Content-Type": "application/json",
@@ -77,10 +129,9 @@ const useAuth = () => {
       const config = {
         method: "POST",
         headers,
-        credentials: "include", // Include cookies if needed
+        credentials: "include",
       };
 
-      // Only add body if data exists
       if (data) {
         config.body = JSON.stringify(data);
       }
@@ -89,7 +140,6 @@ const useAuth = () => {
 
       if (!response.ok) {
         const errorObj = await parseErrorResponse(response);
-        console.log("API Error Response:", errorObj); // Add detailed logging
         setError(errorObj);
         throw errorObj;
       }
@@ -98,10 +148,7 @@ const useAuth = () => {
       setData(result);
       return result;
     } catch (error) {
-      // If it's already our parsed error, just throw it
       if (error.status) throw error;
-
-      // Otherwise set and throw a generic error
       const genericError = {
         status: 500,
         message: error.message || "An unknown error occurred",

@@ -14,6 +14,8 @@ import {
   ScheduleCard,
   useSwiperStyles,
 } from "./components";
+import Button from "Components/form/Button";
+import { DownloadSimple } from "@phosphor-icons/react";
 
 const Schedule = () => {
   const { data: schedules, loading, error, fetchData } = useFetch();
@@ -78,6 +80,13 @@ const Schedule = () => {
           <p className="text-xl lg:text-2xl">
             Discover our classes and join a session that inspires you
           </p>
+
+          <div className="mt-6">
+            <Button variant="outline" size="sm">
+              <DownloadSimple size={16} weight="bold" />
+              Download class schedule
+            </Button>
+          </div>
         </div>
 
         {/* Schedule Grid Layout */}

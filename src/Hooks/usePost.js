@@ -1,5 +1,31 @@
 import { useState } from "react";
-import BASE_URL from "Utilities/BASE_URL";
+import BASE_URL, { MOCK_MODE } from "Utilities/BASE_URL";
+import {
+  getMockLoginResponse,
+  getMockRegisterResponse,
+  mockSuccessResponse,
+  mockVerifyResponse,
+} from "data/mockData";
+
+/**
+ * Mock response resolver for POST endpoints
+ */
+const getMockPostResponse = (url, data) => {
+  if (url === "/auth/login") return getMockLoginResponse(data?.email);
+  if (url === "/auth/register") return getMockRegisterResponse(data);
+  if (url === "/auth/verify-email") return mockVerifyResponse;
+  if (url === "/auth/send-verification") return mockSuccessResponse;
+  if (url === "/user/profile") return { success: true, data: data };
+  if (url === "/user/change-password") return mockSuccessResponse;
+  if (url === "/user/request-password-reset") return mockSuccessResponse;
+  if (url === "/user/verify-reset-code")
+    return { success: true, data: { resetToken: "mock-reset-token" } };
+  if (url === "/user/reset-password") return mockSuccessResponse;
+  if (url === "/event/request") return mockSuccessResponse;
+
+  // Fallback
+  return mockSuccessResponse;
+};
 
 const usePost = () => {
   const [data, setData] = useState(null);
@@ -9,16 +35,28 @@ const usePost = () => {
   const postData = async (url, data, token) => {
     setLoading(true);
     setError(null);
-    console.log("Posting data to:", url, "with data:", data, "token:", token);
-    try {
-      // Get authentication token from localStorage
 
-      // Prepare headers
+    // Mock mode: return mock response with simulated delay
+    if (MOCK_MODE) {
+      try {
+        await new Promise((r) => setTimeout(r, 500));
+        const result = getMockPostResponse(url, data);
+        setData(result);
+        return result;
+      } catch (err) {
+        setError(err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Real mode: POST to backend
+    try {
       const headers = {
         "Content-Type": "application/json",
       };
 
-      // Add authorization header if token exists
       if (token) {
         headers.Authorization = `Bearer ${token}`;
       }
@@ -26,7 +64,7 @@ const usePost = () => {
       const response = await fetch(`${BASE_URL}${url}`, {
         method: "POST",
         headers,
-        credentials: "include", // Include cookies if needed
+        credentials: "include",
         body: JSON.stringify(data),
       });
       if (!response.ok) {

@@ -2,7 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import useInView from "Hooks/useInView";
 import useFetch from "Hooks/useFetch";
 import usePost from "Hooks/usePost";
-import { IMAGE_URL } from "Utilities/BASE_URL";
+import { IMAGE_URL, MOCK_MODE } from "Utilities/BASE_URL";
+import { resolveImageUrl } from "data/mockImages";
 import { DotsLoader, IsError } from "Components/RequestHandler";
 import Container from "Components/Container/Container";
 import { Link } from "react-router-dom";
@@ -176,9 +177,9 @@ const Event = () => {
           {/* Gradient Overlay for Text Readability */}
           <div className="lg:flex-[2]">
             <img
-              src={`${IMAGE_URL}${event.image}`}
+              src={MOCK_MODE ? resolveImageUrl(event.image, IMAGE_URL) : `${IMAGE_URL}${event.image}`}
               alt={event.title}
-              className="w-full mb-6 lg:mb-0 lg:h-[400px] rounded-2xl lg:rounded-[62px] object-cover"
+              className="w-full h-[280px] sm:h-[350px] mb-6 lg:mb-0 lg:aspect-[4/5] lg:h-auto rounded-2xl lg:rounded-[62px] object-cover"
             />
           </div>
 

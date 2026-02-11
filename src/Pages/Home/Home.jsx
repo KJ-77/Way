@@ -1,14 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import useFetch from "Hooks/useFetch";
 import { DotsLoader } from "Components/RequestHandler";
 import Container from "Components/Container/Container";
 import Button from "Components/form/Button";
-import { ArrowRight, WhatsappLogo, InstagramLogo } from "@phosphor-icons/react";
+import { ArrowRight, WhatsappLogo, InstagramLogo, Clock, CaretLeft, CaretRight } from "@phosphor-icons/react";
 import AboutUs from "./AboutUs";
 import heroImage from "assests/hero-image.jpg";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 const Home = () => {
   const { data, isLoading, fetchData } = useFetch();
+  const classesPrevRef = useRef(null);
+  const classesNextRef = useRef(null);
 
   useEffect(() => {
     fetchData("/home");
@@ -98,7 +105,7 @@ const Home = () => {
                 to="/classes"
                 variant="outline-white"
                 size="sm"
-                className="w-full sm:w-auto bg-white text-primary hover:bg-transparent hover:text-white"
+                className="w-full sm:w-auto bg-white/90 !text-black hover:bg-white/10 hover:!text-white border-white"
               >
                 Book now
               </Button>
@@ -166,11 +173,11 @@ const Home = () => {
                 freely create
               </p>
               <div className="flex items-center justify-center lg:justify-start gap-4 text-primary">
-                <button className="hover:opacity-70 transition-opacity">
-                  <span className="text-2xl">←</span>
+                <button className="hover:text-secondary hover:scale-110 transition-all duration-300 cursor-pointer">
+                  <CaretLeft size={24} weight="bold" />
                 </button>
-                <button className="hover:opacity-70 transition-opacity">
-                  <span className="text-2xl">→</span>
+                <button className="hover:text-secondary hover:scale-110 transition-all duration-300 cursor-pointer">
+                  <CaretRight size={24} weight="bold" />
                 </button>
               </div>
             </div>
@@ -183,11 +190,11 @@ const Home = () => {
                 refine your craft.
               </p>
               <div className="flex items-center justify-center lg:justify-start gap-4 text-primary">
-                <button className="hover:opacity-70 transition-opacity">
-                  <span className="text-2xl">←</span>
+                <button className="hover:text-secondary hover:scale-110 transition-all duration-300 cursor-pointer">
+                  <CaretLeft size={24} weight="bold" />
                 </button>
-                <button className="hover:opacity-70 transition-opacity">
-                  <span className="text-2xl">→</span>
+                <button className="hover:text-secondary hover:scale-110 transition-all duration-300 cursor-pointer">
+                  <CaretRight size={24} weight="bold" />
                 </button>
               </div>
             </div>
@@ -212,152 +219,212 @@ const Home = () => {
             </Button>
           </div>
 
-          {/* Classes Grid - 6 Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {/* Card 1: Handbuilding (The Explorer) */}
-            <div className="flex flex-col">
-              <div className="rounded-3xl overflow-hidden mb-4 h-[280px] bg-gray-200">
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                  [Handbuilding Image]
+          {/* Classes Carousel */}
+          <div className="relative group mb-12">
+            <style jsx="true">{`
+              .home-classes-swiper .swiper-pagination-bullet {
+                background: #421f19;
+                opacity: 0.3;
+              }
+              .home-classes-swiper .swiper-pagination-bullet-active {
+                background: #421f19;
+                opacity: 1;
+              }
+            `}</style>
+            <Swiper
+              spaceBetween={32}
+              slidesPerView={1}
+              breakpoints={{
+                768: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 },
+              }}
+              pagination={{ dynamicBullets: true }}
+              navigation={{
+                prevEl: classesPrevRef.current,
+                nextEl: classesNextRef.current,
+              }}
+              onBeforeInit={(swiper) => {
+                if (swiper.params.navigation) {
+                  swiper.params.navigation.prevEl = classesPrevRef.current;
+                  swiper.params.navigation.nextEl = classesNextRef.current;
+                }
+              }}
+              modules={[Pagination, Navigation]}
+              className="home-classes-swiper px-1 pb-12"
+            >
+              {/* Card 1: Handbuilding (The Explorer) */}
+              <SwiperSlide>
+                <div className="flex flex-col">
+                  <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      [Handbuilding Image]
+                    </div>
+                  </div>
+                  <h3 className="text-xl mb-2">
+                    <span className="italic">Handbuilding</span> (The Explorer)
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                    <Clock size={18} weight="bold" />
+                    <span>2hrs</span>
+                  </div>
+                  <p className="text-gray-700 text-sm mb-4 flex-grow">
+                    A pottery technique where clay is molded by hand into unique
+                    shapes and textures.
+                  </p>
+                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                    Book now
+                    <ArrowRight size={12} />
+                  </Button>
                 </div>
-              </div>
-              <h3 className="text-xl mb-2">
-                <span className="italic">Handbuilding</span> (The Explorer)
-              </h3>
-              <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
-                <span>⏱</span>
-                <span>2hrs</span>
-              </div>
-              <p className="text-gray-700 text-sm mb-4 flex-grow">
-                A pottery technique where clay is molded by hand into unique
-                shapes and textures.
-              </p>
-              <Button to="/classes" variant="link" size="sm" className="self-start">
-                Book now
-                <ArrowRight size={12} />
-              </Button>
-            </div>
+              </SwiperSlide>
 
-            {/* Card 2: Wheel Throwing (The Explorer) */}
-            <div className="flex flex-col">
-              <div className="rounded-3xl overflow-hidden mb-4 h-[280px] bg-gray-200">
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                  [Wheel Throwing Image]
+              {/* Card 2: Wheel Throwing (The Explorer) */}
+              <SwiperSlide>
+                <div className="flex flex-col">
+                  <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      [Wheel Throwing Image]
+                    </div>
+                  </div>
+                  <h3 className="text-xl mb-2">
+                    <span className="italic">Wheel Throwing</span> (The Explorer)
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                    <Clock size={18} weight="bold" />
+                    <span>2hrs</span>
+                  </div>
+                  <p className="text-gray-700 text-sm mb-4 flex-grow">
+                    Wheel throwing is shaping clay on a spinning wheel to create
+                    smooth, symmetrical forms.
+                  </p>
+                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                    Book now
+                    <ArrowRight size={12} />
+                  </Button>
                 </div>
-              </div>
-              <h3 className="text-xl mb-2">
-                <span className="italic">Wheel Throwing</span> (The Explorer)
-              </h3>
-              <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
-                <span>⏱</span>
-                <span>2hrs</span>
-              </div>
-              <p className="text-gray-700 text-sm mb-4 flex-grow">
-                Wheel throwing is shaping clay on a spinning wheel to create
-                smooth, symmetrical forms.
-              </p>
-              <Button to="/classes" variant="link" size="sm" className="self-start">
-                Book now
-                <ArrowRight size={12} />
-              </Button>
-            </div>
+              </SwiperSlide>
 
-            {/* Card 3: Sculpting (All levels) */}
-            <div className="flex flex-col">
-              <div className="rounded-3xl overflow-hidden mb-4 h-[280px] bg-gray-200">
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                  [Sculpting Image]
+              {/* Card 3: Sculpting (All levels) */}
+              <SwiperSlide>
+                <div className="flex flex-col">
+                  <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      [Sculpting Image]
+                    </div>
+                  </div>
+                  <h3 className="text-xl mb-2">
+                    <span className="italic">Sculpting</span> (All levels)
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                    <Clock size={18} weight="bold" />
+                    <span>3hrs</span>
+                  </div>
+                  <p className="text-gray-700 text-sm mb-4 flex-grow">
+                    Sculpting is shaping and carving clay or other materials to
+                    create expressive, three-dimensional art
+                  </p>
+                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                    Book now
+                    <ArrowRight size={12} />
+                  </Button>
                 </div>
-              </div>
-              <h3 className="text-xl mb-2">
-                <span className="italic">Sculpting</span> (All levels)
-              </h3>
-              <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
-                <span>⏱</span>
-                <span>3hrs</span>
-              </div>
-              <p className="text-gray-700 text-sm mb-4 flex-grow">
-                Sculpting is shaping and carving clay or other materials to
-                create expressive, three-dimensional art
-              </p>
-              <Button to="/classes" variant="link" size="sm" className="self-start">
-                Book now
-                <ArrowRight size={12} />
-              </Button>
-            </div>
+              </SwiperSlide>
 
-            {/* Card 4: Open Studio */}
-            <div className="flex flex-col">
-              <div className="rounded-3xl overflow-hidden mb-4 h-[280px] bg-gray-200">
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                  [Open Studio Image]
+              {/* Card 4: Open Studio */}
+              <SwiperSlide>
+                <div className="flex flex-col">
+                  <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      [Open Studio Image]
+                    </div>
+                  </div>
+                  <h3 className="text-xl mb-2">
+                    <span className="italic">Open Studio</span>
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                    <Clock size={18} weight="bold" />
+                    <span className="italic">Upon Enquiry</span>
+                  </div>
+                  <p className="text-gray-700 text-sm mb-4 flex-grow">
+                    Open Studio is a free-creation where you use our space, tools,
+                    and materials to work at your own pace.
+                  </p>
+                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                    Book now
+                    <ArrowRight size={12} />
+                  </Button>
                 </div>
-              </div>
-              <h3 className="text-xl mb-2">
-                <span className="italic">Open Studio</span>
-              </h3>
-              <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
-                <span>⏱</span>
-                <span className="italic">Upon Enquiry</span>
-              </div>
-              <p className="text-gray-700 text-sm mb-4 flex-grow">
-                Open Studio is a free-creation where you use our space, tools,
-                and materials to work at your own pace.
-              </p>
-              <Button to="/classes" variant="link" size="sm" className="self-start">
-                Book now
-                <ArrowRight size={12} />
-              </Button>
-            </div>
+              </SwiperSlide>
 
-            {/* Card 5: Painting on Canvas */}
-            <div className="flex flex-col">
-              <div className="rounded-3xl overflow-hidden mb-4 h-[280px] bg-gray-200">
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                  [Painting on Canvas Image]
+              {/* Card 5: Painting on Canvas */}
+              <SwiperSlide>
+                <div className="flex flex-col">
+                  <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      [Painting on Canvas Image]
+                    </div>
+                  </div>
+                  <h3 className="text-xl mb-2">
+                    <span className="italic">Painting on Canvas</span>
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                    <Clock size={18} weight="bold" />
+                    <span>3hrs</span>
+                  </div>
+                  <p className="text-gray-700 text-sm mb-4 flex-grow">
+                    Painting on canvas is expressing ideas and emotions through
+                    color and texture on a blank surface
+                  </p>
+                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                    Book now
+                    <ArrowRight size={12} />
+                  </Button>
                 </div>
-              </div>
-              <h3 className="text-xl mb-2">
-                <span className="italic">Painting on Canvas</span>
-              </h3>
-              <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
-                <span>⏱</span>
-                <span>3hrs</span>
-              </div>
-              <p className="text-gray-700 text-sm mb-4 flex-grow">
-                Painting on canvas is expressing ideas and emotions through
-                color and texture on a blank surface
-              </p>
-              <Button to="/classes" variant="link" size="sm" className="self-start">
-                Book now
-                <ArrowRight size={12} />
-              </Button>
-            </div>
+              </SwiperSlide>
 
-            {/* Card 6: Handbuilding (Mastery) */}
-            <div className="flex flex-col">
-              <div className="rounded-3xl overflow-hidden mb-4 h-[280px] bg-gray-200">
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                  [Handbuilding Mastery Image]
+              {/* Card 6: Handbuilding (Mastery) */}
+              <SwiperSlide>
+                <div className="flex flex-col">
+                  <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      [Handbuilding Mastery Image]
+                    </div>
+                  </div>
+                  <h3 className="text-xl mb-2">
+                    <span className="italic">Handbuilding</span> (Mastery)
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
+                    <Clock size={18} weight="bold" />
+                    <span>3hrs</span>
+                  </div>
+                  <p className="text-gray-700 text-sm mb-4 flex-grow">
+                    Handbuilding Advanced takes your skills further exploring
+                    complex forms, refined techniques, and more creative freedom in
+                    shaping clay.
+                  </p>
+                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                    Book now
+                    <ArrowRight size={12} />
+                  </Button>
                 </div>
-              </div>
-              <h3 className="text-xl mb-2">
-                <span className="italic">Handbuilding</span> (Mastery)
-              </h3>
-              <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
-                <span>⏱</span>
-                <span>3hrs</span>
-              </div>
-              <p className="text-gray-700 text-sm mb-4 flex-grow">
-                Handbuilding Advanced takes your skills further exploring
-                complex forms, refined techniques, and more creative freedom in
-                shaping clay.
-              </p>
-              <Button to="/classes" variant="link" size="sm" className="self-start">
-                Book now
-                <ArrowRight size={12} />
-              </Button>
-            </div>
+              </SwiperSlide>
+            </Swiper>
+
+            {/* Carousel Navigation Arrows */}
+            <button
+              ref={classesPrevRef}
+              className="absolute left-0 top-1/3 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-primary shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white hover:scale-105 -translate-x-1/2"
+              aria-label="Previous class"
+            >
+              <CaretLeft size={20} weight="bold" />
+            </button>
+            <button
+              ref={classesNextRef}
+              className="absolute right-0 top-1/3 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-primary shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white hover:scale-105 translate-x-1/2"
+              aria-label="Next class"
+            >
+              <CaretRight size={20} weight="bold" />
+            </button>
           </div>
 
           {/* View More Button */}

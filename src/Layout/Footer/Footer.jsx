@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Container from "Components/Container/Container";
-import BASE_URL from "Utilities/BASE_URL";
+import BASE_URL, { MOCK_MODE } from "Utilities/BASE_URL";
 
 const Footer = () => {
   const [formData, setFormData] = useState({
@@ -64,30 +64,33 @@ const Footer = () => {
     setSubmitStatus("");
 
     try {
-      const response = await fetch(`${BASE_URL}/api/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setSubmitMessage(data.message);
+      if (MOCK_MODE) {
+        // Simulate network delay
+        await new Promise((r) => setTimeout(r, 600));
+        setSubmitMessage("Thank you! Your message has been received.");
         setSubmitStatus("success");
-        // Reset form on success
-        setFormData({
-          firstName: "",
-          email: "",
-          message: "",
-        });
+        setFormData({ firstName: "", email: "", message: "" });
       } else {
-        setSubmitMessage(
-          data.message || "Failed to send message. Please try again."
-        );
-        setSubmitStatus("error");
+        const response = await fetch(`${BASE_URL}/api/contact`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          setSubmitMessage(data.message);
+          setSubmitStatus("success");
+          setFormData({ firstName: "", email: "", message: "" });
+        } else {
+          setSubmitMessage(
+            data.message || "Failed to send message. Please try again."
+          );
+          setSubmitStatus("error");
+        }
       }
     } catch (error) {
       console.error("Contact form error:", error);

@@ -1,5 +1,7 @@
 import React from "react";
 import useInView from "../../../Hooks/useInView";
+import { MOCK_MODE } from "Utilities/BASE_URL";
+import { getMockCapacity } from "data/mockData";
 import ScheduleImageGallery from "./ScheduleImageGallery";
 import StatusIndicator from "./StatusIndicator";
 import RegistrationButton from "./RegistrationButton";
@@ -35,10 +37,15 @@ const ScheduleCard = ({
     // fetch capacity per session for this schedule
     const load = async () => {
       try {
-        const res = await fetch(
-          `/api/registrations/schedule/${schedule._id}/capacity`
-        );
-        const data = await res.json();
+        let data;
+        if (MOCK_MODE) {
+          data = getMockCapacity(schedule._id);
+        } else {
+          const res = await fetch(
+            `/api/registrations/schedule/${schedule._id}/capacity`
+          );
+          data = await res.json();
+        }
         if (data?.data?.sessions) {
           const map = {};
           data.data.sessions.forEach((s) => {
@@ -241,9 +248,6 @@ const ScheduleCard = ({
 
         {/* Registration Button */}
         <div className="mt-auto flex items-center gap-6">
-          <button className="text-primary font-medium text-sm underline">
-            Download class schedule
-          </button>
           <RegistrationButton
             isRegistered={!!regStatus}
             registeredSessionIds={registeredSessionIds}

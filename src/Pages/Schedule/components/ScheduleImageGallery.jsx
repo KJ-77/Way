@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
-import { IMAGE_URL } from "Utilities/BASE_URL";
+import { IMAGE_URL, MOCK_MODE } from "Utilities/BASE_URL";
+import { resolveImageUrl } from "data/mockImages";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -66,9 +67,9 @@ const ScheduleImageGallery = ({ images }) => {
         {images.map((image, index) => (
           <SwiperSlide className="flex items-center justify-center" key={index}>
             <img
-              src={`${IMAGE_URL}${image}`}
+              src={MOCK_MODE ? resolveImageUrl(image, IMAGE_URL) : `${IMAGE_URL}${image}`}
               alt={`Class ${index + 1}`}
-              className="w-full h-[400px] rounded-[62px] object-cover"
+              className="w-full h-[280px] sm:h-[350px] md:h-[400px] lg:aspect-[4/5] lg:h-auto rounded-[62px] object-cover"
             />
           </SwiperSlide>
         ))}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import BASE_URL from "Utilities/BASE_URL";
+import BASE_URL, { MOCK_MODE } from "Utilities/BASE_URL";
 
 const ProductRequestModal = ({ product, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -69,33 +69,40 @@ const ProductRequestModal = ({ product, onClose, onSuccess }) => {
     setSubmitError(null);
 
     try {
-      const response = await fetch(`${BASE_URL}/product-requests`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          product: product._id,
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          location: formData.location,
-          message: formData.message,
-        }),
-      });
+      if (MOCK_MODE) {
+        // Simulate network delay
+        await new Promise((r) => setTimeout(r, 600));
+        setSubmitSuccess(true);
+        setTimeout(() => {
+          onSuccess && onSuccess();
+        }, 2000);
+      } else {
+        const response = await fetch(`${BASE_URL}/product-requests`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            product: product._id,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            location: formData.location,
+            message: formData.message,
+          }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to submit request");
+        if (!response.ok) {
+          throw new Error(data.message || "Failed to submit request");
+        }
+
+        setSubmitSuccess(true);
+        setTimeout(() => {
+          onSuccess && onSuccess();
+        }, 2000);
       }
-
-      setSubmitSuccess(true);
-
-      // Call the success callback after a short delay
-      setTimeout(() => {
-        onSuccess && onSuccess();
-      }, 2000);
     } catch (error) {
       console.error("Error submitting product request:", error);
       setSubmitError(error.message);

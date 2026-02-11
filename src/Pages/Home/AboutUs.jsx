@@ -2,7 +2,8 @@ import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
-import { IMAGE_URL } from "Utilities/BASE_URL";
+import { IMAGE_URL, MOCK_MODE } from "Utilities/BASE_URL";
+import { resolveImageUrl } from "data/mockImages";
 import Button from "Components/form/Button";
 
 // Import Swiper styles
@@ -57,7 +58,7 @@ const AboutUs = ({ aboutUsData }) => {
         {/* Banner Image */}
         <div className="mb-10">
           <img
-            src={`${IMAGE_URL}${banner_image}`}
+            src={MOCK_MODE ? resolveImageUrl(banner_image, IMAGE_URL) : `${IMAGE_URL}${banner_image}`}
             alt="About Us Banner"
             className="w-full lg:h-[600px] object-cover rounded-[32px]"
           />
@@ -90,9 +91,9 @@ const AboutUs = ({ aboutUsData }) => {
                       {coffee_bar.gallery.map((image, index) => (
                         <SwiperSlide key={index}>
                           <img
-                            src={`${IMAGE_URL}${image}`}
+                            src={MOCK_MODE ? resolveImageUrl(image, IMAGE_URL) : `${IMAGE_URL}${image}`}
                             alt={`Coffee Bar ${index + 1}`}
-                            className="w-full h-[400px] lg:h-[600px] object-cover"
+                            className="w-full h-[280px] sm:h-[350px] md:h-[400px] lg:aspect-[4/5] lg:h-auto object-cover"
                           />
                         </SwiperSlide>
                       ))}
@@ -149,9 +150,9 @@ const AboutUs = ({ aboutUsData }) => {
                       {our_tutors.gallery.map((image, index) => (
                         <SwiperSlide key={index}>
                           <img
-                            src={`${IMAGE_URL}${image}`}
+                            src={MOCK_MODE ? resolveImageUrl(image, IMAGE_URL) : `${IMAGE_URL}${image}`}
                             alt={`Our Tutors ${index + 1}`}
-                            className="w-full h-[400px] lg:h-[600px] object-cover"
+                            className="w-full h-[280px] sm:h-[350px] md:h-[400px] lg:aspect-[4/5] lg:h-auto object-cover"
                           />
                         </SwiperSlide>
                       ))}
