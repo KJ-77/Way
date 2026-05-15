@@ -32,7 +32,7 @@ const EditProfile = () => {
     if (!user) {
       navigate("/auth/login");
     } else if (!user.verified) {
-      navigate("/auth/profile");
+      navigate("/auth/account");
     }
   }, [user, navigate]);
 
@@ -62,7 +62,7 @@ const EditProfile = () => {
 
         // Navigate back to profile after a short delay
         setTimeout(() => {
-          navigate("/auth/profile");
+          navigate("/auth/account");
         }, 2000);
       }
     } catch (err) {
@@ -227,7 +227,7 @@ const EditProfile = () => {
 
               <div className="flex justify-between space-x-4">
                 <Button
-                  onClick={() => navigate("/auth/profile")}
+                  onClick={() => navigate("/auth/account")}
                   variant="secondary"
                   fullWidth
                 >

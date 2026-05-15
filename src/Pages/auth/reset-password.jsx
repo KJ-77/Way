@@ -1,10 +1,15 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "Components/form/Button";
 import FormGroup from "Components/form/FormGroup";
 import InputField from "Components/form/InputField";
-import usePost from "Hooks/usePost";
 
+import AuthContext from "Context/AuthContext";
+
+// Step 3 (final) of the forgot-password flow.
+// We have the email and the reset code from previous steps. The user picks a
+// new password; Cognito.confirmPassword(code, newPassword) validates the code
+// AND sets the new password in one call.
 const ResetPassword = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -12,23 +17,28 @@ const ResetPassword = () => {
     () => new URLSearchParams(location.search),
     [location.search]
   );
-  const tokenFromQuery = query.get("token") || "";
+  const emailFromQuery = query.get("email")
+    ? decodeURIComponent(query.get("email"))
+    : "";
+  const codeFromQuery = query.get("code")
+    ? decodeURIComponent(query.get("code"))
+    : "";
+
+  const { confirmForgotPassword } = useContext(AuthContext);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
-
-  const { loading, postData } = usePost();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-    setMessageType("");
 
-    if (!tokenFromQuery) {
+    if (!emailFromQuery || !codeFromQuery) {
       setMessageType("error");
-      setMessage("Missing reset token. Please restart the reset process.");
+      setMessage("Missing reset info. Please restart the reset process.");
       return;
     }
 
@@ -44,24 +54,17 @@ const ResetPassword = () => {
       return;
     }
 
+    setLoading(true);
     try {
-      const res = await postData("/user/reset-password", {
-        resetToken: tokenFromQuery,
-        password,
-        confirmPassword,
-      });
-
-      if (res?.success) {
-        setMessageType("success");
-        setMessage(res?.message || "Password reset successfully.");
-        setTimeout(() => navigate("/auth/login"), 1200);
-      } else {
-        setMessageType("error");
-        setMessage(res?.message || "Failed to reset password.");
-      }
+      await confirmForgotPassword(emailFromQuery, codeFromQuery, password);
+      setMessageType("success");
+      setMessage("Password reset successfully. Redirecting to sign in...");
+      setTimeout(() => navigate("/auth/login", { replace: true }), 1500);
     } catch (err) {
       setMessageType("error");
-      setMessage(err?.message || "Failed to reset password.");
+      setMessage(err.message || "Failed to reset password.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -116,12 +119,7 @@ const ResetPassword = () => {
                 />
               </FormGroup>
 
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-                disabled={loading}
-              >
+              <Button type="submit" variant="primary" fullWidth disabled={loading}>
                 {loading ? "Submitting..." : "Reset password"}
               </Button>
 

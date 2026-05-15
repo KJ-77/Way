@@ -7,7 +7,7 @@ import { AuthProvider } from "Context/AuthContext";
 // Auth Pages
 import Login from "Pages/auth/login";
 import Register from "Pages/auth/register";
-import Profile from "Pages/auth/profile";
+import Account from "Pages/auth/Account/Account";
 import Verify from "Pages/auth/verify";
 import EditProfile from "Pages/auth/edit-profile";
 import ChangePassword from "Pages/auth/change-password";
@@ -37,7 +37,8 @@ const App = () => {
           {/* Auth Routes */}
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
-          <Route path="/auth/profile" element={<Profile />} />
+          <Route path="/auth/account" element={<Account />} />
+          <Route path="/auth/profile" element={<Navigate to="/auth/account" replace />} />
           <Route path="/auth/edit-profile" element={<EditProfile />} />
           <Route path="/auth/change-password" element={<ChangePassword />} />
           <Route path="/auth/verify" element={<Verify />} />

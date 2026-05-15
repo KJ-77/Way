@@ -1,113 +1,163 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "Components/form/Button";
 import Input from "form/Inputs/Input";
 import PasswordInput from "form/Inputs/PasswordInput";
 import useInput from "form/Hooks/user-input";
-import usePost from "Hooks/usePost";
 
 import AuthContext from "Context/AuthContext";
 
 const Login = () => {
+  // Cognito's username on this pool is phone OR email — we collect email here
+  // since that's the auto-verified attribute and the most natural login UX.
   const email = useInput((val) => val.includes("@"));
   const password = useInput((val) => val.length >= 8);
-  const {loading, error, postData } = usePost();
+
   const [submitted, setSubmitted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
-  const [errorMessage, setErrorMessage] = useState(""); // Add error message state
-  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const { loginHandler, isLoggedIn } = useContext(AuthContext);
+  // FORCE_CHANGE_PASSWORD state — only happens for admin-created clients who
+  // haven't logged in yet. They land in this challenge and must pick a new password.
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+  const navigate = useNavigate();
+  const { login, completeNewPassword, needsNewPassword, isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     if (isLoggedIn) {
-      navigate("auth/profile");
+      navigate("/auth/account");
     }
   }, [isLoggedIn, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitted(true);
-    setErrorMessage(""); // Reset error message
+    setErrorMessage("");
 
     if (!email.isValid || !password.isValid) return;
-    try {
-      setFieldErrors({});
-      const response = await postData("/auth/login", {
-        email: email.value,
-        password: password.value,
-      });
 
-      console.log(response);
+    setLoading(true);
+    setFieldErrors({});
 
-      if (response.success) {
-        const { user, token } = response.data;
-        loginHandler(user, token);
-        navigate("/auth/profile");
-      }
-    } catch (err) {
-      console.error("Login error:", err);
+    const result = await login(email.value.trim().toLowerCase(), password.value);
+    setLoading(false);
 
-      // Extract the error message
-      if (err?.message) {
-        setErrorMessage(err.message);
-      }
+    if (result.status === "success") {
+      navigate("/auth/account");
+      return;
+    }
 
-      // For credential errors, show under both fields
-      if (
-        err?.message?.toLowerCase().includes("credential") ||
-        err?.message?.toLowerCase().includes("invalid") ||
-        err?.message?.toLowerCase().includes("incorrect")
-      ) {
-        setFieldErrors({
-          email: "Invalid credentials",
-          password: "Invalid credentials",
-        });
-      }
+    if (result.status === "new_password_required") {
+      // The needsNewPassword flag in context will flip the UI to the
+      // change-password form below.
+      return;
+    }
 
-      // For email-specific errors
-      else if (err?.message?.toLowerCase().includes("email")) {
-        setFieldErrors({
-          ...fieldErrors,
-          email: err.message,
-        });
-      }
-
-      // For password-specific errors
-      else if (err?.message?.toLowerCase().includes("password")) {
-        setFieldErrors({
-          ...fieldErrors,
-          password: err.message,
-        });
-      }
-
-      // If the error response contains field-specific errors
-      if (err?.response?.data?.errors) {
-        setFieldErrors(err.response.data.errors);
-      }
+    // Error: surface either as field-level or top-level message based on heuristics
+    const msg = result.message || "Authentication failed";
+    setErrorMessage(msg);
+    if (msg.toLowerCase().includes("password") || msg.toLowerCase().includes("incorrect")) {
+      setFieldErrors({ password: "Incorrect email or password" });
+    } else if (msg.toLowerCase().includes("user") || msg.toLowerCase().includes("not exist")) {
+      setFieldErrors({ email: "No account found with this email" });
+    } else if (msg.toLowerCase().includes("not confirmed")) {
+      // User signed up but never entered the verification code — bounce them to verify.
+      navigate(`/auth/verify?email=${encodeURIComponent(email.value.trim().toLowerCase())}`);
     }
   };
+
+  const handleCompleteNewPassword = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    if (newPassword.length < 8) {
+      setErrorMessage("Password must be at least 8 characters.");
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await completeNewPassword(newPassword);
+      navigate("/auth/account");
+    } catch (err) {
+      setErrorMessage(err.message || "Failed to set new password.");
+    }
+    setLoading(false);
+  };
+
+  // FORCE_CHANGE_PASSWORD view — replaces the login form for admin-created accounts
+  if (needsNewPassword) {
+    return (
+      <div className="lg:min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8 lg:mt-secondary">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900">Set a new password</h1>
+            <p className="mt-2 text-sm text-gray-600">
+              Your account was created by an admin. Please choose a new password to continue.
+            </p>
+          </div>
+
+          <div className="mt-8">
+            {errorMessage && (
+              <div className="mb-4 bg-red-50 border border-red-200 text-red-800 rounded-md p-4 text-sm">
+                {errorMessage}
+              </div>
+            )}
+
+            <div className="bg-white py-8 px-6 shadow-sm rounded-lg border border-gray-200">
+              <form className="space-y-6" onSubmit={handleCompleteNewPassword}>
+                <PasswordInput
+                  label="New password"
+                  name="newPassword"
+                  id="new-password"
+                  placeholder="Choose a new password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  hasError={false}
+                />
+                <PasswordInput
+                  label="Confirm new password"
+                  name="confirmNewPassword"
+                  id="confirm-new-password"
+                  placeholder="Confirm new password"
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  hasError={false}
+                />
+
+                <Button type="submit" variant="primary" fullWidth disabled={loading}>
+                  {loading ? "Saving..." : "Set new password"}
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="lg:min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8 lg:mt-secondary">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Sign in to your account
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">Sign in to your account</h1>
           <p className="mt-2 text-sm text-gray-600">
             Or{" "}
-            <Link
-              to="/auth/register"
-              className="font-medium text-black hover:text-gray-800 underline"
-            >
+            <Link to="/auth/register" className="font-medium text-black hover:text-gray-800 underline">
               create a new account
             </Link>
           </p>
         </div>
 
         <div className="mt-8">
-          {(error || errorMessage) && (
+          {errorMessage && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-800 rounded-md p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -125,22 +175,15 @@ const Login = () => {
                   </svg>
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">
-                    Login failed
-                  </h3>
-                  <div className="mt-1 text-sm text-red-700">
-                    {errorMessage ||
-                      (typeof error === "string"
-                        ? error
-                        : "Invalid email or pasjghghgjhgjhfsword. Please try again.")}
-                  </div>
+                  <h3 className="text-sm font-medium text-red-800">Login failed</h3>
+                  <div className="mt-1 text-sm text-red-700">{errorMessage}</div>
                 </div>
               </div>
             </div>
           )}
 
           <div className="bg-white py-8 px-6 shadow-sm rounded-lg border border-gray-200">
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <Input
                 label="Email"
                 type="email"
@@ -151,9 +194,7 @@ const Login = () => {
                 onChange={email.inputChangeHandler}
                 onBlur={email.inputBlurHandler}
                 hasError={(submitted && email.HasError) || !!fieldErrors.email}
-                errorMessage={
-                  fieldErrors.email || "Please enter a valid email."
-                }
+                errorMessage={fieldErrors.email || "Please enter a valid email."}
               />
               <PasswordInput
                 label="Password"
@@ -163,13 +204,8 @@ const Login = () => {
                 value={password.value}
                 onChange={password.inputChangeHandler}
                 onBlur={password.inputBlurHandler}
-                hasError={
-                  (submitted && password.HasError) || !!fieldErrors.password
-                }
-                errorMessage={
-                  fieldErrors.password ||
-                  "Password must be at least 8 characters."
-                }
+                hasError={(submitted && password.HasError) || !!fieldErrors.password}
+                errorMessage={fieldErrors.password || "Password must be at least 8 characters."}
               />
 
               <div className="flex items-center justify-end">
@@ -183,12 +219,7 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button
-                onClick={handleSubmit}
-                variant="primary"
-                fullWidth
-                disabled={loading}
-              >
+              <Button type="submit" variant="primary" fullWidth disabled={loading}>
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
             </form>

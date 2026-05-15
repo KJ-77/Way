@@ -1,10 +1,14 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "Components/form/Button";
 import FormGroup from "Components/form/FormGroup";
 import InputField from "Components/form/InputField";
-import usePost from "Hooks/usePost";
 
+// Step 2 of the forgot-password flow.
+// User enters their email + the 6-digit code Cognito emailed. We don't actually
+// verify the code with Cognito here — Cognito only validates the code as part
+// of confirmPassword(). So this screen just collects the inputs and hands them
+// to the next screen which performs the password reset.
 const VerifyResetCode = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -21,12 +25,9 @@ const VerifyResetCode = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  const { loading, postData } = usePost();
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setMessage("");
-    setMessageType("");
 
     const normalizedEmail = (email || "").trim().toLowerCase();
     const normalizedCode = (code || "").trim();
@@ -37,35 +38,16 @@ const VerifyResetCode = () => {
       return;
     }
 
-    try {
-      const res = await postData("/user/verify-reset-code", {
-        email: normalizedEmail,
-        code: normalizedCode,
-      });
-
-      if (res?.success && res?.data?.resetToken) {
-        navigate(
-          `/auth/password/reset?token=${encodeURIComponent(
-            res.data.resetToken
-          )}`
-        );
-      } else {
-        setMessageType("error");
-        setMessage(res?.message || "Invalid or expired code.");
-      }
-    } catch (err) {
-      setMessageType("error");
-      setMessage(err?.message || "Verification failed. Please try again.");
-    }
+    navigate(
+      `/auth/password/reset?email=${encodeURIComponent(normalizedEmail)}&code=${encodeURIComponent(normalizedCode)}`
+    );
   };
 
   return (
     <div className="lg:min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8 lg:mt-secondary">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Verify reset code
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">Enter your code</h1>
           <p className="mt-2 text-sm text-gray-600">
             Enter the 6-digit code sent to your email
           </p>
@@ -114,16 +96,12 @@ const VerifyResetCode = () => {
                       .slice(0, 6);
                     setCode(digitsOnly);
                   }}
+                  inputMode="numeric"
                 />
               </FormGroup>
 
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-                disabled={loading}
-              >
-                {loading ? "Verifying..." : "Verify code"}
+              <Button type="submit" variant="primary" fullWidth>
+                Continue
               </Button>
 
               <div className="text-center">

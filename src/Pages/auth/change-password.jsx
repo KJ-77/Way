@@ -27,7 +27,7 @@ const ChangePassword = () => {
     if (!user) {
       navigate("/auth/login");
     } else if (!user.verified) {
-      navigate("/auth/profile");
+      navigate("/auth/account");
     }
   }, [user, navigate]);
 
@@ -74,7 +74,7 @@ const ChangePassword = () => {
 
         // Navigate back to profile after a short delay
         setTimeout(() => {
-          navigate("/auth/profile");
+          navigate("/auth/account");
         }, 2000);
       }
     } catch (err) {

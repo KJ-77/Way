@@ -16,7 +16,7 @@ const AuthButton = ({ darkMode, onClick }) => {
   return (
     <div className="relative">
       <Link
-        to={isLoggedIn ? "/auth/profile" : "/auth/login"}
+        to={isLoggedIn ? "/auth/account" : "/auth/login"}
         className={`flex items-center justify-center w-10 h-10 rounded-full ${
           darkMode
             ? "bg-white text-black hover:bg-gray-200"

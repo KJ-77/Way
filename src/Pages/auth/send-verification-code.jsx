@@ -1,13 +1,19 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import InputField from "Components/form/InputField";
 import Button from "Components/form/Button";
 import FormGroup from "Components/form/FormGroup";
-import usePost from "Hooks/usePost";
 
+import AuthContext from "Context/AuthContext";
+
+// Step 1 of the forgot-password flow.
+// User enters their email → we call Cognito.forgotPassword() → Cognito emails
+// a 6-digit code → user proceeds to /auth/password/verify to enter it.
 const SendVerificationCode = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { forgotPassword } = useContext(AuthContext);
+
   const query = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
@@ -18,19 +24,16 @@ const SendVerificationCode = () => {
 
   const [email, setEmail] = useState(initialEmail);
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); // success | error
-
-  const { loading, postData } = usePost();
+  const [messageType, setMessageType] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (initialEmail) setEmail(initialEmail);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialEmail]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-    setMessageType("");
 
     const normalizedEmail = (email || "").trim().toLowerCase();
     if (!normalizedEmail) {
@@ -39,24 +42,19 @@ const SendVerificationCode = () => {
       return;
     }
 
+    setLoading(true);
     try {
-      const res = await postData("/user/request-password-reset", {
-        email: normalizedEmail,
-      });
-      if (res?.success) {
-        setMessageType("success");
-        setMessage(res.message || "Verification code sent to your email.");
-        // Go to verify code screen, preserve email
-        navigate(
-          `/auth/password/verify?email=${encodeURIComponent(normalizedEmail)}`
-        );
-      } else {
-        setMessageType("error");
-        setMessage(res?.message || "Failed to send verification code.");
-      }
+      await forgotPassword(normalizedEmail);
+      setMessageType("success");
+      setMessage("Verification code sent. Check your email.");
+      navigate(
+        `/auth/password/verify?email=${encodeURIComponent(normalizedEmail)}`
+      );
     } catch (err) {
       setMessageType("error");
-      setMessage(err?.message || "Failed to send verification code.");
+      setMessage(err.message || "Failed to send verification code.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,9 +62,7 @@ const SendVerificationCode = () => {
     <div className="lg:min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8 lg:mt-secondary">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Reset your password
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">Reset your password</h1>
           <p className="mt-2 text-sm text-gray-600">
             Enter your email address to receive a verification code
           </p>
@@ -94,22 +90,15 @@ const SendVerificationCode = () => {
                   name="email"
                   placeholder="email@example.com"
                   required
-                  // controlled value
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-
                 <p className="text-xs text-gray-600 mt-2">
                   We'll send a verification code to this email address
                 </p>
               </FormGroup>
 
-              <Button
-                type="submit"
-                variant="primary"
-                fullWidth
-                disabled={loading}
-              >
+              <Button type="submit" variant="primary" fullWidth disabled={loading}>
                 {loading ? "Sending..." : "Send verification code"}
               </Button>
 

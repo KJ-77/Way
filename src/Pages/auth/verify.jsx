@@ -1,22 +1,37 @@
-import React, { useRef, useState, useContext } from "react";
-import { useNavigate, Link} from "react-router-dom";
+import { useRef, useState, useContext, useMemo, useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import Button from "Components/form/Button";
-import usePost from "Hooks/usePost";
 
 import AuthContext from "Context/AuthContext";
 
+// Verifies a fresh signup with the 6-digit confirmation code Cognito emailed.
+// Pre-login screen — reached via /auth/verify?email=<email> right after /auth/register.
 const Verify = () => {
   const inputRefs = useRef(Array(6).fill(null));
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [responseMessage, setResponseMessage] = useState("");
   const [responseType, setResponseType] = useState(""); // "success" or "error"
-  const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
 
-  const { postData } = usePost();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { confirmSignUp, resendConfirmationCode } = useContext(AuthContext);
+
+  // Email comes from the query param set by register.jsx after /auth/signup succeeds.
+  const email = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get("email")?.toLowerCase() || "";
+  }, [location.search]);
+
+  // Bounce back to register if we landed here without an email
+  useEffect(() => {
+    if (!email) {
+      navigate("/auth/register", { replace: true });
+    }
+  }, [email, navigate]);
 
   const handleChange = (e, idx) => {
-    const value = e.target.value.replace(/\D/, ""); // Only digits
+    const value = e.target.value.replace(/\D/, "");
     if (!value) return;
 
     const newOtp = [...otp];
@@ -40,86 +55,58 @@ const Verify = () => {
     }
   };
 
-  // Handle paste
   const handlePaste = (e) => {
     e.preventDefault();
-    const pastedData = e.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
-      .slice(0, 6);
-    if (!pastedData) return;
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!pasted) return;
 
     const newOtp = [...otp];
-    for (let i = 0; i < pastedData.length; i++) {
-      newOtp[i] = pastedData[i];
-      if (inputRefs.current[i]) {
-        inputRefs.current[i].value = pastedData[i];
-      }
+    for (let i = 0; i < pasted.length; i++) {
+      newOtp[i] = pasted[i];
+      if (inputRefs.current[i]) inputRefs.current[i].value = pasted[i];
     }
     setOtp(newOtp);
-
-    // Focus the next empty input or last input
-    const nextIndex = Math.min(pastedData.length, 5);
-    inputRefs.current[nextIndex]?.focus();
+    inputRefs.current[Math.min(pasted.length, 5)]?.focus();
   };
 
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
-    const otpCode = otp.join("");
-    if (otpCode.length !== 6) {
+    const code = otp.join("");
+    if (code.length !== 6) {
       setResponseType("error");
       setResponseMessage("Please enter the 6-digit code.");
-      setTimeout(() => setResponseMessage(""), 3000);
       return;
     }
 
+    setLoading(true);
+    setResponseMessage("");
     try {
-      const response = await postData("/auth/verify-email", {
-        email: user.email,
-        code: otpCode,
-      });
-
-      if (response.success) {
-        setResponseType("success");
-        setResponseMessage(response.message || "Verification successful!");
-        navigate("/profile");
-      } else {
-        setResponseType("error");
-        setResponseMessage(response.message || "Verification failed.");
-      }
-    } catch (error) {
+      await confirmSignUp(email, code);
+      setResponseType("success");
+      setResponseMessage("Email verified! Redirecting to sign in...");
+      setTimeout(() => navigate("/auth/login", { replace: true }), 1500);
+    } catch (err) {
       setResponseType("error");
-      setResponseMessage(
-        error?.message || "Verification failed. Please try again."
-      );
+      setResponseMessage(err.message || "Verification failed. Please try again.");
     } finally {
-      setTimeout(() => setResponseMessage(""), 3000);
+      setLoading(false);
     }
   };
 
-  // Resend verification code
   const handleResendCode = async () => {
+    setResponseMessage("");
+    setLoading(true);
     try {
-      const response = await postData("/auth/send-verification", {
-        email: user.email,
-      });
-
-      if (response.success) {
-        setOtp(["", "", "", "", "", ""]);
-        inputRefs.current[0]?.focus();
-        setResponseType("success");
-        setResponseMessage(response.message || "Verification code resent!");
-      } else {
-        setResponseType("error");
-        setResponseMessage(response.message || "Failed to resend code.");
-      }
-    } catch (error) {
+      await resendConfirmationCode(email);
+      setOtp(["", "", "", "", "", ""]);
+      inputRefs.current[0]?.focus();
+      setResponseType("success");
+      setResponseMessage("New verification code sent. Check your email.");
+    } catch (err) {
       setResponseType("error");
-      setResponseMessage(
-        error?.message || "Failed to resend code. Please try again."
-      );
+      setResponseMessage(err.message || "Failed to resend code.");
     } finally {
-      setTimeout(() => setResponseMessage(""), 3000);
+      setLoading(false);
     }
   };
 
@@ -127,11 +114,11 @@ const Verify = () => {
     <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Verify your email
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">Verify your email</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Please enter the verification code sent to your email address
+            Enter the 6-digit code we sent to
+            <br />
+            <span className="font-medium text-gray-900">{email}</span>
           </p>
         </div>
 
@@ -163,6 +150,7 @@ const Verify = () => {
                       onChange={(e) => handleChange(e, idx)}
                       onKeyDown={(e) => handleKeyDown(e, idx)}
                       onPaste={handlePaste}
+                      inputMode="numeric"
                     />
                   ))}
                 </div>
@@ -170,17 +158,18 @@ const Verify = () => {
                 <p className="text-sm text-gray-600 mb-4">
                   Didn't receive a code?{" "}
                   <button
-                    onClick={handleResendCode}
                     type="button"
-                    className="text-black font-medium hover:text-gray-800"
+                    onClick={handleResendCode}
+                    disabled={loading}
+                    className="text-black font-medium hover:text-gray-800 disabled:opacity-50"
                   >
                     Resend
                   </button>
                 </p>
               </div>
 
-              <Button type="submit" variant="primary" fullWidth>
-                Verify
+              <Button type="submit" variant="primary" fullWidth disabled={loading}>
+                {loading ? "Verifying..." : "Verify"}
               </Button>
 
               <div className="text-center">

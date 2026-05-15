@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import AuthButton from "Components/auth/AuthButton";
+import UserNavControl from "Components/auth/UserNavControl";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Container from "Components/Container/Container";
 import { X } from "@phosphor-icons/react";
@@ -268,6 +269,9 @@ const Header = () => {
                   </span>
                 )}
               </Link>
+
+              {/* Auth control — shows Login button when logged out, user dropdown when logged in */}
+              <UserNavControl light={showWhiteOnHome} />
             </nav>
 
             <button

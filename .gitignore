@@ -25,3 +25,7 @@ dist-ssr
 
 /local
 /.playwright-mcp
+
+# Environment variables
+.env
+.env.*
