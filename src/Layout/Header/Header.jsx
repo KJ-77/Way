@@ -215,6 +215,22 @@ const Header = () => {
                 )}
               </div>
               <Link
+                to="/schedule"
+                className={`${
+                  isScrolled
+                    ? "text-gray-900"
+                    : showWhiteOnHome
+                    ? "text-white"
+                    : "text-gray-900"
+                } hover:${
+                  showWhiteOnHome ? "text-gray-300" : "text-gray-600"
+                }  font-medium block transition-all duration-300 ${
+                  isScrolled ? "text-sm" : "text-sm"
+                }`}
+              >
+                Schedule
+              </Link>
+              <Link
                 to="/events"
                 className={`${
                   isScrolled
@@ -365,6 +381,7 @@ const Header = () => {
                     delay: "100ms",
                   },
                   { to: "/classes", label: "Classes", delay: "200ms" },
+                  { to: "/schedule", label: "Schedule", delay: "250ms" },
                   { to: "/events", label: "Events", delay: "300ms" },
                   { to: "/shop", label: "Shop", delay: "400ms" },
                   {

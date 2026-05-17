@@ -1,5 +1,5 @@
 import { useState } from "react";
-import BASE_URL, { MOCK_MODE } from "Utilities/BASE_URL";
+import BASE_URL, { shouldUseMock } from "Utilities/BASE_URL";
 import {
   mockHomeData,
   mockScheduleData,
@@ -9,9 +9,7 @@ import {
   getMockProductsByCategory,
 } from "data/mockData";
 
-/**
- * Mock data resolver for GET endpoints
- */
+// Mock data resolver for GET endpoints still backed by fixtures.
 const getMockData = (url) => {
   if (url === "/home") return mockHomeData;
   if (url === "/schedule") return mockScheduleData;
@@ -33,8 +31,9 @@ const useFetch = () => {
   const [error, setError] = useState(null);
 
   const fetchData = async (url) => {
-    // Mock mode: return mock data with simulated delay
-    if (MOCK_MODE) {
+    // Per-endpoint override: if MOCK_MODE is on but this URL is in LIVE_ENDPOINTS,
+    // skip the mock branch and hit the real backend.
+    if (shouldUseMock(url)) {
       try {
         await new Promise((r) => setTimeout(r, 300));
         const result = getMockData(url);
@@ -48,7 +47,6 @@ const useFetch = () => {
       return;
     }
 
-    // Real mode: fetch from backend
     try {
       const response = await fetch(`${BASE_URL}${url}`);
       if (!response.ok) {
