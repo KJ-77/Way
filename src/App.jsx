@@ -14,7 +14,7 @@ import ChangePassword from "Pages/auth/change-password";
 import SendVerificationCode from "Pages/auth/send-verification-code";
 import VerifyResetCode from "Pages/auth/verify-reset-code";
 import ResetPassword from "Pages/auth/reset-password";
-import Schedule from "Pages/Schedule/Schedule";
+import Classes from "Pages/Classes/Classes";
 import WeeklySchedule from "Pages/WeeklySchedule/WeeklySchedule";
 import Event from "Pages/Events/Event";
 import Shop from "./Pages/Shop/Shop";
@@ -31,7 +31,7 @@ const App = () => {
         <Header />
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/classes" element={<Schedule />} />
+          <Route path="/classes" element={<Classes />} />
           <Route path="/schedule" element={<WeeklySchedule />} />
           <Route path="/events" element={<Event />} />
 

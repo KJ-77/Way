@@ -15,6 +15,7 @@ export const MOCK_MODE = true;
 // Match against the leading path segment so e.g. `/schedule/123` also goes live.
 const LIVE_ENDPOINT_PREFIXES = [
   "/schedule",
+  "/packages",
 ];
 
 // Returns true if the given URL path should bypass mock data and hit the backend.
