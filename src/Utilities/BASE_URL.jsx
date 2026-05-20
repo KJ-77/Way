@@ -16,6 +16,8 @@ export const MOCK_MODE = true;
 const LIVE_ENDPOINT_PREFIXES = [
   "/schedule",
   "/packages",
+  "/sessions",
+  "/items",
 ];
 
 // Returns true if the given URL path should bypass mock data and hit the backend.

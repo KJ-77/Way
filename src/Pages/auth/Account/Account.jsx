@@ -6,6 +6,7 @@ import AccountTabs from "./components/AccountTabs";
 import ProfileTab from "./components/tabs/ProfileTab";
 import SubscriptionsTab from "./components/tabs/SubscriptionsTab";
 import BookingsTab from "./components/tabs/BookingsTab";
+import MyWorkTab from "./components/tabs/MyWorkTab";
 import OrdersTab from "./components/tabs/OrdersTab";
 
 // Maps tab id → component. Keeps the switch table out of the JSX.
@@ -13,6 +14,7 @@ const TAB_COMPONENTS = {
   profile: ProfileTab,
   subscriptions: SubscriptionsTab,
   bookings: BookingsTab,
+  "my-work": MyWorkTab,
   orders: OrdersTab,
 };
 

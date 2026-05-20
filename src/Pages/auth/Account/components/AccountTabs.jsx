@@ -1,4 +1,4 @@
-import { UserCircle, CreditCard, CalendarCheck, ShoppingBag } from "@phosphor-icons/react";
+import { UserCircle, CreditCard, CalendarCheck, Palette, ShoppingBag } from "@phosphor-icons/react";
 
 // Horizontal tab bar for the Account page. Stateless — receives the current tab
 // and a setter from the parent so the URL or future deep-linking could be added later.
@@ -6,6 +6,7 @@ const TABS = [
   { id: "profile", label: "Profile", Icon: UserCircle },
   { id: "subscriptions", label: "Subscriptions", Icon: CreditCard },
   { id: "bookings", label: "Bookings", Icon: CalendarCheck },
+  { id: "my-work", label: "My Work", Icon: Palette },
   { id: "orders", label: "Orders", Icon: ShoppingBag },
 ];
 
