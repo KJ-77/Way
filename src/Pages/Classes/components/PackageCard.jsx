@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Scales, Sparkle, ArrowRight } from "@phosphor-icons/react";
+import { Calendar, Sparkle, ArrowRight } from "@phosphor-icons/react";
 import AuthContext from "Context/AuthContext";
 
 // Two brown variants alternate by id to give the catalog visual rhythm — same
@@ -32,17 +32,15 @@ const PackageCard = ({ pkg, variantIndex = 0 }) => {
   const { isLoggedIn } = useContext(AuthContext);
   const v = variantIndex % 2 === 0 ? VARIANTS.dark : VARIANTS.light;
 
-  // Build the perk pills from whatever fields the package actually has set —
-  // packages with no sessions/weight (rare) just render a smaller list.
+  // Build the perk pills from whatever fields the package actually has set.
+  // Weight allowance is intentionally hidden from the public catalog — clients
+  // only see sessions count. Studio still tracks weight internally.
   const perks = [];
   if (pkg.sessions_included && Number(pkg.sessions_included) > 0) {
     perks.push({
       icon: Calendar,
       label: `${pkg.sessions_included} session${pkg.sessions_included === 1 ? "" : "s"}`,
     });
-  }
-  if (pkg.weight_included && Number(pkg.weight_included) > 0) {
-    perks.push({ icon: Scales, label: `${pkg.weight_included} kg clay` });
   }
 
   const priceLabel =
