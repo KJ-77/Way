@@ -52,99 +52,6 @@ export const mockHomeData = {
 };
 
 // ============================================================
-// SCHEDULE/CLASSES — GET /schedule
-// ============================================================
-export const mockScheduleData = {
-  data: [
-    {
-      _id: "sched-1",
-      title: "Handbuilding (The Explorer)",
-      text: "<p>A pottery technique where clay is molded by hand into unique shapes and textures. Perfect for beginners looking to discover the art of ceramics.</p>",
-      price: 45,
-      images: [
-        "placeholder:Handbuilding Class 1:800:400",
-        "placeholder:Handbuilding Class 2:800:400",
-        "placeholder:Handbuilding Class 3:800:400",
-      ],
-      sessions: [
-        { _id: "sess-1a", startDate: futureDate(7), capacity: 12 },
-        { _id: "sess-1b", startDate: futureDate(14), capacity: 12 },
-        { _id: "sess-1c", startDate: futureDate(21), capacity: 12 },
-      ],
-    },
-    {
-      _id: "sched-2",
-      title: "Wheel Throwing (The Explorer)",
-      text: "<p>Wheel throwing is shaping clay on a spinning wheel to create smooth, symmetrical forms. Learn the fundamentals of centering and pulling.</p>",
-      price: 55,
-      images: [
-        "placeholder:Wheel Throwing 1:800:400",
-        "placeholder:Wheel Throwing 2:800:400",
-      ],
-      sessions: [
-        { _id: "sess-2a", startDate: futureDate(5), capacity: 8 },
-        { _id: "sess-2b", startDate: futureDate(12), capacity: 8 },
-      ],
-    },
-    {
-      _id: "sched-3",
-      title: "Sculpting (All Levels)",
-      text: "<p>Sculpting is shaping and carving clay or other materials to create expressive, three-dimensional art. Open to all skill levels.</p>",
-      price: 50,
-      images: [
-        "placeholder:Sculpting Class 1:800:400",
-        "placeholder:Sculpting Class 2:800:400",
-      ],
-      sessions: [
-        { _id: "sess-3a", startDate: futureDate(3), capacity: 10 },
-        { _id: "sess-3b", startDate: futureDate(10), capacity: 10 },
-        { _id: "sess-3c", startDate: futureDate(17), capacity: 10 },
-      ],
-    },
-    {
-      _id: "sched-4",
-      title: "Open Studio",
-      text: "<p>Open Studio is a free-creation space where you use our tools and materials to work at your own pace. No structure, just pure creative freedom.</p>",
-      price: 30,
-      images: ["placeholder:Open Studio:800:400"],
-      sessions: [
-        { _id: "sess-4a", startDate: futureDate(2), capacity: 15 },
-        { _id: "sess-4b", startDate: futureDate(9), capacity: 15 },
-      ],
-    },
-    {
-      _id: "sched-5",
-      title: "Painting on Canvas",
-      text: "<p>Painting on canvas is expressing ideas and emotions through color and texture on a blank surface. Explore acrylics, oils, and mixed media.</p>",
-      price: 40,
-      images: [
-        "placeholder:Canvas Painting 1:800:400",
-        "placeholder:Canvas Painting 2:800:400",
-      ],
-      sessions: [
-        { _id: "sess-5a", startDate: futureDate(6), capacity: 12 },
-        { _id: "sess-5b", startDate: futureDate(13), capacity: 12 },
-      ],
-    },
-    {
-      _id: "sched-6",
-      title: "Handbuilding (Mastery)",
-      text: "<p>Handbuilding Advanced takes your skills further — exploring complex forms, refined techniques, and more creative freedom in shaping clay.</p>",
-      price: 65,
-      images: [
-        "placeholder:Advanced Handbuilding 1:800:400",
-        "placeholder:Advanced Handbuilding 2:800:400",
-        "placeholder:Advanced Handbuilding 3:800:400",
-      ],
-      sessions: [
-        { _id: "sess-6a", startDate: futureDate(8), capacity: 8 },
-        { _id: "sess-6b", startDate: futureDate(15), capacity: 8 },
-      ],
-    },
-  ],
-};
-
-// ============================================================
 // EVENTS — GET /event
 // ============================================================
 export const mockEventData = {
@@ -262,24 +169,6 @@ export const mockMyRegistrations = {
   data: {
     registrations: [],
   },
-};
-
-// ============================================================
-// CAPACITY — GET /api/registrations/schedule/:id/capacity
-// ============================================================
-export const getMockCapacity = (scheduleId) => {
-  const schedule = mockScheduleData.data.find((s) => s._id === scheduleId);
-  if (!schedule) return { data: { sessions: [] } };
-
-  return {
-    data: {
-      sessions: schedule.sessions.map((s) => ({
-        sessionId: s._id,
-        paid: Math.floor(Math.random() * (s.capacity - 2)),
-        totalCapacity: s.capacity,
-      })),
-    },
-  };
 };
 
 // ============================================================

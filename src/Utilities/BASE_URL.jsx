@@ -21,8 +21,15 @@ const LIVE_ENDPOINT_PREFIXES = [
 ];
 
 // Returns true if the given URL path should bypass mock data and hit the backend.
-export const isLiveEndpoint = (url) =>
-  LIVE_ENDPOINT_PREFIXES.some((prefix) => url === prefix || url.startsWith(`${prefix}/`));
+// Strips any query string first so e.g. `/schedule?week=2026-05-25` still matches
+// the `/schedule` prefix — without this, query-string URLs would fall through to
+// mock mode and silently return empty data.
+export const isLiveEndpoint = (url) => {
+  const path = url.split("?")[0];
+  return LIVE_ENDPOINT_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`)
+  );
+};
 
 // Convenience: should this URL use mock data?
 export const shouldUseMock = (url) => MOCK_MODE && !isLiveEndpoint(url);

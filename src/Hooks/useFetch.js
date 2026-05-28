@@ -2,7 +2,6 @@ import { useState } from "react";
 import BASE_URL, { shouldUseMock } from "Utilities/BASE_URL";
 import {
   mockHomeData,
-  mockScheduleData,
   mockEventData,
   mockProductCategories,
   mockAllProducts,
@@ -10,9 +9,10 @@ import {
 } from "data/mockData";
 
 // Mock data resolver for GET endpoints still backed by fixtures.
+// /schedule is NOT in here — it always hits the real backend via
+// LIVE_ENDPOINT_PREFIXES in Utilities/BASE_URL.
 const getMockData = (url) => {
   if (url === "/home") return mockHomeData;
-  if (url === "/schedule") return mockScheduleData;
   if (url === "/event") return mockEventData;
   if (url === "/product-categories") return mockProductCategories;
   if (url === "/products") return mockAllProducts;
