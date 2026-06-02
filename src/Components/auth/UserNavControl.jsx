@@ -10,6 +10,9 @@ import AuthContext from "Context/AuthContext";
 const UserNavControl = ({ light = false }) => {
   const { isLoggedIn, user, logoutHandler } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
+  // Gates the sign-out — clicking the menu item opens the confirmation modal
+  // and the actual logout only fires from the modal's confirm button.
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const containerRef = useRef(null);
   const navigate = useNavigate();
 
@@ -30,8 +33,24 @@ const UserNavControl = ({ light = false }) => {
     };
   }, [isOpen]);
 
-  const handleSignOut = () => {
+  // Allow Escape to dismiss the confirmation modal without signing out.
+  useEffect(() => {
+    if (!confirmOpen) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setConfirmOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [confirmOpen]);
+
+  // Opens the confirmation modal — actual sign-out is deferred to confirmSignOut.
+  const handleSignOutClick = () => {
     setIsOpen(false);
+    setConfirmOpen(true);
+  };
+
+  const confirmSignOut = () => {
+    setConfirmOpen(false);
     logoutHandler();
     navigate("/");
   };
@@ -115,7 +134,7 @@ const UserNavControl = ({ light = false }) => {
         </Link>
         <button
           type="button"
-          onClick={handleSignOut}
+          onClick={handleSignOutClick}
           className="w-full flex items-center gap-x-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors border-t border-gray-100"
           role="menuitem"
         >
@@ -123,6 +142,45 @@ const UserNavControl = ({ light = false }) => {
           Sign out
         </button>
       </div>
+
+      {/* Confirmation modal — gates the sign-out so a misclick doesn't kill the session. */}
+      {confirmOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="signout-confirm-title"
+          onClick={(e) => {
+            // Click on the backdrop dismisses; clicks inside the panel don't bubble here
+            if (e.target === e.currentTarget) setConfirmOpen(false);
+          }}
+        >
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+            <h3 id="signout-confirm-title" className="text-lg font-semibold text-gray-900">
+              Sign out?
+            </h3>
+            <p className="mt-2 text-sm text-gray-600">
+              You'll need to sign back in to access your account.
+            </p>
+            <div className="mt-6 flex justify-end gap-x-3">
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmSignOut}
+                className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

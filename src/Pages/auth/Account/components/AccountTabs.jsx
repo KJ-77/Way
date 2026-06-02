@@ -6,7 +6,7 @@ const TABS = [
   { id: "profile", label: "Profile", Icon: UserCircle },
   { id: "subscriptions", label: "Subscriptions", Icon: CreditCard },
   { id: "bookings", label: "Bookings", Icon: CalendarCheck },
-  { id: "my-work", label: "My Work", Icon: Palette },
+  { id: "my-work", label: "My Items", Icon: Palette },
   { id: "orders", label: "Orders", Icon: ShoppingBag },
 ];
 

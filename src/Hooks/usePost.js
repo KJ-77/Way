@@ -1,5 +1,6 @@
 import { useState } from "react";
 import BASE_URL, { MOCK_MODE } from "Utilities/BASE_URL";
+import { throwIfNotOk } from "../lib/errors";
 import {
   getMockLoginResponse,
   getMockRegisterResponse,
@@ -67,10 +68,8 @@ const usePost = () => {
         credentials: "include",
         body: JSON.stringify(data),
       });
-      if (!response.ok) {
-        const errorResult = await response.json().catch(() => ({}));
-        throw new Error(errorResult.message || "Network response was not ok");
-      }
+      // Throws ApiError with backend code/status so call sites can branch by code
+      await throwIfNotOk(response, "Network response was not ok");
       const result = await response.json();
       setData(result);
       return result;

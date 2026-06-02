@@ -7,10 +7,29 @@ import useInput from "form/Hooks/user-input";
 
 import AuthContext from "Context/AuthContext";
 
+// Recognize either an email or an E.164-style phone (optional leading +, 7+ digits
+// with optional spaces — Cognito stores phones without spaces, we normalize on submit).
+// Loose intentionally: Cognito itself does the authoritative match.
+const looksLikeIdentifier = (val) => {
+  const trimmed = val.trim();
+  if (trimmed.length === 0) return false;
+  if (trimmed.includes("@")) return true; // email-shaped
+  return /^\+?[\d\s]{7,}$/.test(trimmed); // phone-shaped
+};
+
+// Strip spaces from phones; lowercase emails. Cognito's username alias accepts both
+// shapes on this pool, but the value must be in canonical form (E.164 for phone,
+// lowercase for email) to actually match.
+const normalizeIdentifier = (val) => {
+  const trimmed = val.trim();
+  return trimmed.includes("@") ? trimmed.toLowerCase() : trimmed.replace(/\s+/g, "");
+};
+
 const Login = () => {
-  // Cognito's username on this pool is phone OR email — we collect email here
-  // since that's the auto-verified attribute and the most natural login UX.
-  const email = useInput((val) => val.includes("@"));
+  // The client Cognito pool aliases username to BOTH phone_number and email, so a
+  // single field can accept either. We validate loosely and let Cognito reject the
+  // detailed shape mismatches on submit.
+  const identifier = useInput(looksLikeIdentifier);
   const password = useInput((val) => val.length >= 8);
 
   const [submitted, setSubmitted] = useState(false);
@@ -37,12 +56,13 @@ const Login = () => {
     setSubmitted(true);
     setErrorMessage("");
 
-    if (!email.isValid || !password.isValid) return;
+    if (!identifier.isValid || !password.isValid) return;
 
     setLoading(true);
     setFieldErrors({});
 
-    const result = await login(email.value.trim().toLowerCase(), password.value);
+    const normalized = normalizeIdentifier(identifier.value);
+    const result = await login(normalized, password.value);
     setLoading(false);
 
     if (result.status === "success") {
@@ -60,12 +80,15 @@ const Login = () => {
     const msg = result.message || "Authentication failed";
     setErrorMessage(msg);
     if (msg.toLowerCase().includes("password") || msg.toLowerCase().includes("incorrect")) {
-      setFieldErrors({ password: "Incorrect email or password" });
+      setFieldErrors({ password: "Incorrect email/phone or password" });
     } else if (msg.toLowerCase().includes("user") || msg.toLowerCase().includes("not exist")) {
-      setFieldErrors({ email: "No account found with this email" });
+      setFieldErrors({ identifier: "No account found with this email or phone" });
     } else if (msg.toLowerCase().includes("not confirmed")) {
       // User signed up but never entered the verification code — bounce them to verify.
-      navigate(`/auth/verify?email=${encodeURIComponent(email.value.trim().toLowerCase())}`);
+      // Verify page expects an email param; only redirect if the identifier looks like one.
+      if (normalized.includes("@")) {
+        navigate(`/auth/verify?email=${encodeURIComponent(normalized)}`);
+      }
     }
   };
 
@@ -100,7 +123,7 @@ const Login = () => {
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900">Set a new password</h1>
             <p className="mt-2 text-sm text-gray-600">
-              Your account was created by an admin. Please choose a new password to continue.
+              Your password was set by an admin. Please choose a new password to continue.
             </p>
           </div>
 
@@ -185,16 +208,16 @@ const Login = () => {
           <div className="bg-white py-8 px-6 shadow-sm rounded-lg border border-gray-200">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <Input
-                label="Email"
-                type="email"
-                name="email"
-                id="login-email"
-                placeholder="Enter your email"
-                value={email.value}
-                onChange={email.inputChangeHandler}
-                onBlur={email.inputBlurHandler}
-                hasError={(submitted && email.HasError) || !!fieldErrors.email}
-                errorMessage={fieldErrors.email || "Please enter a valid email."}
+                label="Email or phone"
+                type="text"
+                name="identifier"
+                id="login-identifier"
+                placeholder="you@example.com or +96170123456"
+                value={identifier.value}
+                onChange={identifier.inputChangeHandler}
+                onBlur={identifier.inputBlurHandler}
+                hasError={(submitted && identifier.HasError) || !!fieldErrors.identifier}
+                errorMessage={fieldErrors.identifier || "Enter a valid email or phone number."}
               />
               <PasswordInput
                 label="Password"

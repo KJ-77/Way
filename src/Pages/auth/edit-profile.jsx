@@ -5,6 +5,7 @@ import Input from "form/Inputs/Input";
 import useInput from "form/Hooks/user-input";
 import usePost from "Hooks/usePost";
 import AuthContext from "Context/AuthContext";
+import { friendlyError } from "../../lib/errors";
 
 const EditProfile = () => {
   const { user, token, updateUserProfile } = useContext(AuthContext);
@@ -68,20 +69,13 @@ const EditProfile = () => {
     } catch (err) {
       console.error("Edit profile error:", err);
 
-      if (err?.message) {
-        setErrorMessage(err.message);
-      }
-
-      // Handle field-specific errors
-      if (err?.message?.toLowerCase().includes("email")) {
-        setFieldErrors({
-          ...fieldErrors,
-          email: err.message,
-        });
-      }
-
-      if (err?.response?.data?.errors) {
-        setFieldErrors(err.response.data.errors);
+      // Code-based field targeting (preferred — backend now emits stable codes)
+      if (err?.code === "PHONE_TAKEN") {
+        setFieldErrors({ ...fieldErrors, phoneNumber: "This phone number is already in use." });
+      } else if (err?.code === "EMAIL_TAKEN" || err?.code === "USERNAME_EXISTS") {
+        setFieldErrors({ ...fieldErrors, email: "This email is already in use." });
+      } else {
+        setErrorMessage(friendlyError(err, "Couldn't update your profile. Please try again."));
       }
     }
   };

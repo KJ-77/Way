@@ -8,6 +8,7 @@ import useInput from "form/Hooks/user-input";
 
 import AuthContext from "Context/AuthContext";
 import { apiFetch } from "../../lib/api";
+import { friendlyError } from "../../lib/errors";
 
 // Values match the `referral_source` enum on the backend users table.
 // Labels are what the user sees in the dropdown.
@@ -85,9 +86,10 @@ const Register = () => {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        // Map common backend errors to inline field errors where possible
-        const msg = data?.message || data?.error || "Sign up failed. Please try again.";
-        if (response.status === 409 || /already.*exists/i.test(msg)) {
+        // Backend-emitted code → field-specific inline error (preferred path)
+        if (data?.code === "PHONE_TAKEN") {
+          setFieldErrors({ phoneNumber: "An account with this phone number already exists." });
+        } else if (data?.code === "EMAIL_TAKEN" || data?.code === "USERNAME_EXISTS") {
           setFieldErrors({ email: "An account with this email already exists." });
         } else if (data?.issues) {
           // Zod errors — assign by path
@@ -104,7 +106,8 @@ const Register = () => {
             referralSource: issues.referral_source,
           });
         } else {
-          setErrorMessage(msg);
+          // Anything else falls through to the wildcard / generic banner
+          setErrorMessage(friendlyError({ ...data, status: response.status }, "Sign up failed. Please try again."));
         }
         return;
       }
@@ -114,7 +117,7 @@ const Register = () => {
       navigate(`/auth/verify?email=${encodeURIComponent(normalizedEmail)}`);
     } catch (err) {
       console.error("Sign up error", err);
-      setErrorMessage(err.message || "Network error. Please try again.");
+      setErrorMessage(friendlyError(err, "Network error. Please try again."));
     } finally {
       setLoading(false);
     }
