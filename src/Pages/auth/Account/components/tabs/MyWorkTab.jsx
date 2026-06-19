@@ -69,7 +69,6 @@ const formatDate = (iso) =>
 const itemTitle = (item) => item.description?.trim() || `Untitled piece #${item.id}`;
 
 const ItemCard = ({ item }) => {
-  const hasWeights = item.mid_weight != null || item.final_weight != null;
   return (
     <div className="bg-gray-50/60 rounded-xl p-4 sm:p-6">
       <div className="flex items-start justify-between gap-x-3 mb-4">
@@ -86,15 +85,8 @@ const ItemCard = ({ item }) => {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
         {item.clay_type && <Stat label="Clay Type" value={item.clay_type} />}
-        {hasWeights && (
-          <Stat
-            label="Weight"
-            value={
-              item.final_weight != null
-                ? `${item.final_weight} kg final`
-                : `${item.mid_weight} kg mid`
-            }
-          />
+        {item.final_weight != null && (
+          <Stat label="Final Weight" value={`${item.final_weight} kg`} />
         )}
         <Stat label="Last Updated" value={formatDate(item.updated_at)} />
       </div>
