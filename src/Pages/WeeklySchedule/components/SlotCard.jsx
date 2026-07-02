@@ -1,4 +1,4 @@
-import { Prohibit } from "@phosphor-icons/react";
+import { Prohibit, Ticket } from "@phosphor-icons/react";
 
 // Single class slot card. Two brown variants alternate by slot id for warmth
 // and visual rhythm in the weekly grid (inspired by the studio's brand palette).
@@ -8,6 +8,11 @@ import { Prohibit } from "@phosphor-icons/react";
 //      badge + a hover tooltip with the reason when one was provided.
 //   2. Fully booked (per-week override) → desaturated muted variant + badge.
 //   3. Normal → dark/light brown alternating variant.
+//
+// Booking CTA: when the parent passes `canBook=true` (client has an eligible
+// subscription for this class AND the occurrence is in the future AND the slot
+// isn't cancelled/fully-booked), we render an inline "Book" button that opens
+// the BookingModal via the onBook callback.
 const VARIANTS = {
   dark: "bg-[#5a4434] text-white",
   light: "bg-[#a6826e] text-white",
@@ -16,10 +21,12 @@ const VARIANTS = {
   cancelled: "bg-gray-200 text-gray-500 border border-gray-300",
 };
 
-const SlotCard = ({ slot, variantIndex = 0 }) => {
+const SlotCard = ({ slot, variantIndex = 0, canBook = false, onBook }) => {
   const start = (slot.start_time || "").slice(0, 5);
   const end = (slot.end_time || "").slice(0, 5);
-  const classType = slot.package || "Class";
+  // class_type_name is the joined class name from the backend; fall back to
+  // the legacy `package` field only if the backend hasn't been redeployed yet.
+  const classType = slot.class_type_name || slot.package || "Class";
   const isCancelled = !!slot.is_cancelled;
   const isFullyBooked = !!slot.is_fully_booked;
   const isDark = variantIndex % 2 === 0;
@@ -74,6 +81,20 @@ const SlotCard = ({ slot, variantIndex = 0 }) => {
         >
           with {slot.tutor_name}
         </p>
+      )}
+
+      {/* Book CTA — only rendered when the parent flags this occurrence as
+          eligible for the current user. Sits at the bottom of the card so
+          the tutor line + card body stay above it. */}
+      {canBook && (
+        <button
+          type="button"
+          onClick={() => onBook?.(slot)}
+          className="mt-3 inline-flex items-center justify-center gap-x-1.5 w-full px-3 py-1.5 rounded-md bg-white/95 text-[#5a4434] text-xs font-medium hover:bg-white transition-colors"
+        >
+          <Ticket size={14} weight="bold" />
+          Book
+        </button>
       )}
 
       {/* Tooltip — only renders for cancelled slots with a reason.

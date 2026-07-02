@@ -1,5 +1,6 @@
 import { useState } from "react";
-import BASE_URL, { shouldUseMock } from "Utilities/BASE_URL";
+import { shouldUseMock } from "Utilities/BASE_URL";
+import { apiFetch } from "../lib/api";
 import {
   mockHomeData,
   mockEventData,
@@ -48,9 +49,12 @@ const useFetch = () => {
     }
 
     try {
-      const response = await fetch(`${BASE_URL}${url}`);
+      // apiFetch resolves BASE_URL and attaches the Cognito ID token when a
+      // session exists. Live endpoints that were previously public (packages,
+      // schedule) now require auth — hitting them without a token returns 401.
+      const response = await apiFetch(url);
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error(`Request failed (HTTP ${response.status})`);
       }
       const result = await response.json();
       setData(result);

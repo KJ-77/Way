@@ -1,7 +1,4 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
-import { Calendar, Sparkle, ArrowRight } from "@phosphor-icons/react";
-import AuthContext from "Context/AuthContext";
+import { Calendar, Sparkle } from "@phosphor-icons/react";
 
 // Two brown variants alternate by id to give the catalog visual rhythm — same
 // palette as the weekly schedule page so the two pages feel cohesive.
@@ -28,8 +25,10 @@ const Perk = ({ icon: Icon, label, chip }) => (
   </div>
 );
 
+// /classes is now behind <ProtectedRoute>, so every viewer of this card is
+// logged in. The old "Sign in to subscribe" branch is gone; the CTA is a
+// disabled "Coming soon" placeholder until the subscribe purchase flow lands.
 const PackageCard = ({ pkg, variantIndex = 0 }) => {
-  const { isLoggedIn } = useContext(AuthContext);
   const v = variantIndex % 2 === 0 ? VARIANTS.dark : VARIANTS.light;
 
   // Build the perk pills from whatever fields the package actually has set.
@@ -78,27 +77,16 @@ const PackageCard = ({ pkg, variantIndex = 0 }) => {
           <span className="text-xs uppercase tracking-wider opacity-70">per package</span>
         </div>
 
-        {/* CTA — logged-out users get a sign-in link; logged-in users see a disabled
-            "Coming soon" placeholder until the subscribe flow is wired. */}
-        {isLoggedIn ? (
-          <button
-            type="button"
-            disabled
-            className={`w-full flex items-center justify-center gap-x-2 px-5 py-3 rounded-xl text-sm font-medium cursor-not-allowed opacity-70 ${v.secondary}`}
-            title="Subscribe flow coming soon"
-          >
-            <Sparkle size={16} weight="bold" />
-            Subscribe — coming soon
-          </button>
-        ) : (
-          <Link
-            to="/auth/login"
-            className={`w-full flex items-center justify-center gap-x-2 px-5 py-3 rounded-xl text-sm font-medium transition-colors ${v.cta}`}
-          >
-            Sign in to subscribe
-            <ArrowRight size={16} weight="bold" />
-          </Link>
-        )}
+        {/* CTA — disabled placeholder until the subscribe purchase flow lands. */}
+        <button
+          type="button"
+          disabled
+          className={`w-full flex items-center justify-center gap-x-2 px-5 py-3 rounded-xl text-sm font-medium cursor-not-allowed opacity-70 ${v.secondary}`}
+          title="Subscribe flow coming soon"
+        >
+          <Sparkle size={16} weight="bold" />
+          Subscribe — coming soon
+        </button>
       </div>
     </article>
   );

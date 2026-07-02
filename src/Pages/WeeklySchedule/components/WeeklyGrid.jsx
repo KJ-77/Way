@@ -28,7 +28,8 @@ const groupByDay = (slots) => {
 };
 
 // Renders the seven day columns. Responsive: 1 col on mobile, 2 on tablet, 7 on desktop.
-const WeeklyGrid = ({ slots }) => {
+// isSlotBookable(slot) is passed down from the page — the grid stays dumb.
+const WeeklyGrid = ({ slots, isSlotBookable, onBookSlot }) => {
   const slotsByDay = useMemo(() => groupByDay(slots), [slots]);
 
   return (
@@ -39,6 +40,8 @@ const WeeklyGrid = ({ slots }) => {
           dayLabel={day.label}
           slots={slotsByDay[day.idx]}
           startVariant={day.idx}
+          isSlotBookable={isSlotBookable}
+          onBookSlot={onBookSlot}
         />
       ))}
     </div>

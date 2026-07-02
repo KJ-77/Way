@@ -35,6 +35,21 @@ export function addDays(yyyyMmDd, days) {
   return d.toISOString().slice(0, 10);
 }
 
+// Today's calendar date in Asia/Beirut, formatted YYYY-MM-DD. Mirrors the
+// backend's getBeirutToday() so date comparisons agree across app boundaries.
+export function getBeirutToday(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: STUDIO_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const y = parts.find((p) => p.type === "year").value;
+  const m = parts.find((p) => p.type === "month").value;
+  const d = parts.find((p) => p.type === "day").value;
+  return `${y}-${m}-${d}`;
+}
+
 // Formats YYYY-MM-DD as "May 25 – 31" for the week-navigator header.
 export function formatWeekRange(weekStart) {
   const start = new Date(`${weekStart}T00:00:00Z`);

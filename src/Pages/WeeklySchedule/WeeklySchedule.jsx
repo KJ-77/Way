@@ -1,35 +1,127 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo, useContext } from "react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import useFetch from "Hooks/useFetch";
 import Container from "Components/Container/Container";
 import { IsError, DotsLoader } from "Components/RequestHandler";
+import AuthContext from "Context/AuthContext";
+import { apiFetch } from "../../lib/api";
 import WeeklyGrid from "./components/WeeklyGrid";
-import { getBeirutWeekStart, addDays, formatWeekRange } from "Helpers/BeirutWeek";
+import BookingModal from "./components/BookingModal";
+import { getBeirutWeekStart, getBeirutToday, addDays, formatWeekRange } from "Helpers/BeirutWeek";
 
-// Public weekly schedule page — anyone can view what classes Way is running
-// this week. Backed by the public GET /schedule?week= endpoint. The grid
-// reflects per-week overrides (cancellations, fully-booked) merged in by the
-// backend, so customers see the actual state of the week they're viewing.
+// Behind <ProtectedRoute> — every viewer is logged in. In addition to the
+// weekly slots, we fetch the user's own subscriptions and use them to compute
+// per-slot booking eligibility. A slot is bookable if:
+//   • The user has an active sub whose package.class_type_id matches the slot
+//   • That sub has remaining_sessions > 0 and hasn't expired
+//   • The slot is in the future (or today) for the currently-viewed week
+//   • The slot isn't cancelled or fully-booked for this week
 const WeeklySchedule = () => {
-  // Track which week the user is currently viewing. Default: current Beirut week.
-  // Future weeks are useful so customers can see planned closures ahead of time.
+  const { user } = useContext(AuthContext);
   const [weekStart, setWeekStart] = useState(() => getBeirutWeekStart());
   const { data, loading, error, fetchData } = useFetch();
 
-  // Refetch every time the user moves between weeks
+  // Separate hook for /user-packages — clients see their own subs (backend
+  // force-filters to the caller's sub for source_pool='client').
+  const [subs, setSubs] = useState([]);
+  const [subsLoading, setSubsLoading] = useState(true);
+
+  // Refetch schedule when the user pages between weeks.
   useEffect(() => {
     fetchData(`/schedule?week=${weekStart}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weekStart]);
+
+  // Fetch subs once on mount (they don't change per-week). Refreshes after
+  // every booking via `refreshSubs` below.
+  const refreshSubs = useCallback(async () => {
+    setSubsLoading(true);
+    try {
+      const res = await apiFetch("/user-packages");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const rows = await res.json();
+      setSubs(Array.isArray(rows) ? rows : []);
+    } catch {
+      // Non-fatal — user just won't see any Book buttons. The rest of the
+      // schedule renders fine.
+      setSubs([]);
+    } finally {
+      setSubsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) refreshSubs();
+  }, [user, refreshSubs]);
+
+  // Set of class_type_ids that this user's active, non-depleted subs cover.
+  // O(1) membership check downstream. Values in this Set are used both for the
+  // "is this slot bookable?" predicate and for filtering eligible subs when we
+  // pass them into the modal.
+  const eligibleClassTypeIds = useMemo(() => {
+    const ids = new Set();
+    for (const sub of subs) {
+      if (
+        sub.class_type_id &&
+        Number(sub.remaining_sessions) > 0 &&
+        sub.status !== "expired" &&
+        sub.status !== "depleted"
+      ) {
+        ids.add(sub.class_type_id);
+      }
+    }
+    return ids;
+  }, [subs]);
+
+  const currentWeekStart = useMemo(() => getBeirutWeekStart(new Date()), []);
+  // For "is this slot in the past" we compare the slot's actual calendar date
+  // (weekStart + day_of_week) against today (Beirut). Matches the backend's
+  // PAST_BOOKING guard so we don't offer a Book button that will 400.
+  const isSlotBookable = useCallback(
+    (slot) => {
+      if (!slot || slot.is_cancelled || slot.is_fully_booked) return false;
+      if (!eligibleClassTypeIds.has(slot.class_type_id)) return false;
+      const classDate = addDays(weekStart, slot.day_of_week);
+      return classDate >= getBeirutToday();
+    },
+    [eligibleClassTypeIds, weekStart]
+  );
+
+  // Modal state — bookingContext carries {slot, classDate, eligibleSubs}.
+  const [bookingContext, setBookingContext] = useState(null);
+
+  const handleBookSlot = useCallback(
+    (slot) => {
+      const classDate = addDays(weekStart, slot.day_of_week);
+      const eligibleSubs = subs.filter(
+        (s) =>
+          s.class_type_id === slot.class_type_id &&
+          Number(s.remaining_sessions) > 0 &&
+          s.status !== "expired" &&
+          s.status !== "depleted"
+      );
+      if (eligibleSubs.length === 0) return; // Shouldn't happen if isSlotBookable said yes
+      setBookingContext({ slot, classDate, eligibleSubs });
+    },
+    [subs, weekStart]
+  );
+
+  const handleBookingSuccess = useCallback(async () => {
+    setBookingContext(null);
+    // Refetch both — the slot's attending_count changes and the sub's
+    // remaining_sessions decrements.
+    await Promise.all([fetchData(`/schedule?week=${weekStart}`), refreshSubs()]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weekStart, refreshSubs]);
 
   const slots = data?.slots ?? [];
 
   const goToPreviousWeek = useCallback(() => setWeekStart((w) => addDays(w, -7)), []);
   const goToNextWeek = useCallback(() => setWeekStart((w) => addDays(w, 7)), []);
   const goToCurrentWeek = useCallback(() => setWeekStart(getBeirutWeekStart()), []);
-  const isCurrentWeek = weekStart === getBeirutWeekStart();
+  const isCurrentWeek = weekStart === currentWeekStart;
 
-  if (loading && !data) {
+  if ((loading && !data) || subsLoading) {
     return (
       <div className="flex flex-col gap-4 min-h-[60vh] items-center justify-center">
         <DotsLoader />
@@ -48,7 +140,6 @@ const WeeklySchedule = () => {
 
   return (
     <Container className="my-6 sm:my-secondary md:my-primary lg:my-large">
-      {/* Heading + week navigator */}
       <div className="flex flex-col gap-6 mb-10 lg:mb-secondary">
         <div className="flex flex-col gap-4 lg:gap-6 max-w-2xl">
           <h1 className="text-3xl lg:text-5xl font-light text-[#5a4434]">
@@ -59,12 +150,11 @@ const WeeklySchedule = () => {
             )}
           </h1>
           <p className="text-lg lg:text-xl text-[#7a5d4d]">
-            A look at the classes running this week. Subscribed to one of these?
-            Drop in any time during your session.
+            A look at the classes running this week. Book any class your
+            subscription covers.
           </p>
         </div>
 
-        {/* Week navigator pill */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="inline-flex items-center rounded-full border border-[#5a4434]/30 bg-white">
             <button
@@ -102,14 +192,27 @@ const WeeklySchedule = () => {
         </div>
       </div>
 
-      {/* Grid (or empty state) */}
       {slots.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200 py-16 text-center">
           <p className="text-gray-600">No classes scheduled this week.</p>
           <p className="text-sm text-gray-400 mt-1">Check back soon.</p>
         </div>
       ) : (
-        <WeeklyGrid slots={slots} />
+        <WeeklyGrid
+          slots={slots}
+          isSlotBookable={isSlotBookable}
+          onBookSlot={handleBookSlot}
+        />
+      )}
+
+      {bookingContext && (
+        <BookingModal
+          slot={bookingContext.slot}
+          classDate={bookingContext.classDate}
+          eligibleSubs={bookingContext.eligibleSubs}
+          onClose={() => setBookingContext(null)}
+          onBooked={handleBookingSuccess}
+        />
       )}
     </Container>
   );

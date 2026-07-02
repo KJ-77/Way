@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 import AuthContext from "Context/AuthContext";
 import AccountHeader from "./components/AccountHeader";
 import AccountTabs from "./components/AccountTabs";
@@ -18,24 +17,11 @@ const TAB_COMPONENTS = {
   orders: OrdersTab,
 };
 
+// Route-level auth guard now lives in <ProtectedRoute> (wraps this component
+// in App.jsx). By the time we render, `user` is guaranteed non-null.
 const Account = () => {
-  const { user, isLoading } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("profile");
-
-  // Gate the page: anyone hitting /auth/account without a session bounces to login.
-  // Wait until isLoading settles so we don't redirect during the initial session restore.
-  useEffect(() => {
-    if (!isLoading && !user) navigate("/auth/login", { replace: true });
-  }, [user, isLoading, navigate]);
-
-  if (isLoading || !user) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-sm text-gray-500">Loading…</div>
-      </div>
-    );
-  }
 
   const ActiveTabComponent = TAB_COMPONENTS[activeTab] ?? ProfileTab;
 

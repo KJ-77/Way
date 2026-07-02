@@ -18,6 +18,7 @@ import Classes from "Pages/Classes/Classes";
 import WeeklySchedule from "Pages/WeeklySchedule/WeeklySchedule";
 import Event from "Pages/Events/Event";
 import Shop from "./Pages/Shop/Shop";
+import ProtectedRoute from "Components/auth/ProtectedRoute";
 
 import Header from "Layout/Header/Header";
 import Footer from "Layout/Footer/Footer";
@@ -31,14 +32,38 @@ const App = () => {
         <Header />
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/classes" element={<Classes />} />
-          <Route path="/schedule" element={<WeeklySchedule />} />
+          {/* /classes and /schedule are gated per the studio's request —
+              anonymous browsing is disabled. Session-restore + redirect logic
+              lives in <ProtectedRoute>. */}
+          <Route
+            path="/classes"
+            element={
+              <ProtectedRoute>
+                <Classes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/schedule"
+            element={
+              <ProtectedRoute>
+                <WeeklySchedule />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/events" element={<Event />} />
 
           {/* Auth Routes */}
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
-          <Route path="/auth/account" element={<Account />} />
+          <Route
+            path="/auth/account"
+            element={
+              <ProtectedRoute>
+                <Account />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/auth/profile" element={<Navigate to="/auth/account" replace />} />
           <Route path="/auth/edit-profile" element={<EditProfile />} />
           <Route path="/auth/change-password" element={<ChangePassword />} />
