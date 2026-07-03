@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { X } from "@phosphor-icons/react";
 import { apiFetch } from "../../../lib/api";
 import { friendlyError, throwIfNotOk } from "../../../lib/errors";
+import SubscriptionCard from "../../../Components/subscription/SubscriptionCard";
 
 // Formats "2026-05-25" → "Monday, May 25, 2026" for the confirmation copy.
 // Uses UTC because our date strings are calendar dates (no time-of-day) and
@@ -19,9 +20,13 @@ const formatBookingDate = (yyyyMmDd) => {
 
 const trimHhMm = (t) => (t || "").slice(0, 5);
 
-// Confirmation modal for booking a class occurrence. Pops when a client hits
-// "Book" on an eligible slot in the weekly grid. Handles the sub picker when
-// they have more than one eligible subscription for this class.
+// Confirmation modal for booking a class occurrence. Pops after the client
+// chooses "Book a class" from SlotActionsModal AND has at least one eligible
+// subscription for this class.
+//
+// Shows the full SubscriptionCard for the sub about to be used, with a preview
+// delta on Sessions Left so the client sees exactly what changes ("8 → 7")
+// before they confirm.
 //
 // Props:
 //   slot          — the ScheduleSlotForWeek row (has class_type_id, class_type_name, times)
@@ -46,6 +51,11 @@ const BookingModal = ({ slot, classDate, eligibleSubs, onClose, onBooked }) => {
   const [selectedSubId, setSelectedSubId] = useState(defaultSubId);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+
+  const selectedSub = useMemo(
+    () => eligibleSubs.find((s) => s.id === selectedSubId) ?? null,
+    [eligibleSubs, selectedSubId]
+  );
 
   const handleConfirm = async () => {
     if (!selectedSubId) return;
@@ -73,14 +83,12 @@ const BookingModal = ({ slot, classDate, eligibleSubs, onClose, onBooked }) => {
   const showPicker = eligibleSubs.length > 1;
 
   return (
-    // Backdrop + centered card. Backdrop click closes.
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 sm:p-8"
-        // Stop clicks inside the card from bubbling to the backdrop handler.
+        className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 sm:p-8 max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4 mb-5">
@@ -102,6 +110,9 @@ const BookingModal = ({ slot, classDate, eligibleSubs, onClose, onBooked }) => {
           </button>
         </div>
 
+        {/* Sub picker — only shown when multiple subs cover this class. The
+            picker is a compact radio list; the full-detail card below reflects
+            whichever radio is currently selected. */}
         {showPicker && (
           <div className="mb-5">
             <label className="block text-xs uppercase tracking-widest text-[#a6826e] mb-2">
@@ -139,18 +150,14 @@ const BookingModal = ({ slot, classDate, eligibleSubs, onClose, onBooked }) => {
           </div>
         )}
 
-        {!showPicker && eligibleSubs[0] && (
-          <div className="mb-5 p-3 rounded-lg bg-[#f3e7df]/60 border border-[#5a4434]/15">
-            <div className="text-xs uppercase tracking-widest text-[#a6826e] mb-1">
-              Using
-            </div>
-            <div className="text-sm font-medium text-[#5a4434] capitalize">
-              {eligibleSubs[0].package_name}
-            </div>
-            <div className="text-xs text-[#7a5d4d] mt-0.5">
-              {eligibleSubs[0].remaining_sessions} session
-              {eligibleSubs[0].remaining_sessions === 1 ? "" : "s"} remaining before this booking
-            </div>
+        {/* Full SubscriptionCard for the selected sub, with a -1 sessions
+            preview showing the "8 → 7" transition the confirm will trigger. */}
+        {selectedSub && (
+          <div className="mb-5">
+            <p className="text-xs uppercase tracking-widest text-[#a6826e] mb-2">
+              After this booking
+            </p>
+            <SubscriptionCard sub={selectedSub} preview={{ sessionsDelta: -1 }} />
           </div>
         )}
 

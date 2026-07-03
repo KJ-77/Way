@@ -54,6 +54,7 @@ const CODE_MESSAGES = {
   USER_NOT_FOUND: "We couldn't find that account.",
   INVALID_CREDENTIALS: "Wrong email or password. Please try again.",
   SERVER_ERROR: "Something went wrong on our end. Please try again in a moment.",
+  DUPLICATE_BOOKING: "You're already booked for this class.",
 };
 
 // Fallback strings for generic HTTP statuses when no code is set.

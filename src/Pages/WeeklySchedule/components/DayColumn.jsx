@@ -4,9 +4,9 @@ import SlotCard from "./SlotCard";
 // Empty days get a soft "No classes" placeholder so the column keeps its weight.
 // `startVariant` lets the parent stagger the dark/light pattern across columns so
 // adjacent cells in the desktop grid don't all share the same shade.
-// isSlotBookable(slot) is the parent's eligibility predicate — the column
-// forwards each slot into it, and only shows the Book CTA when it returns true.
-const DayColumn = ({ dayLabel, slots, startVariant = 0, isSlotBookable, onBookSlot }) => {
+// isSlotPast(slot) marks the slot as an occurrence already in the past this week;
+// onSlotClick(slot) opens the actions modal in the parent.
+const DayColumn = ({ dayLabel, slots, startVariant = 0, isSlotPast, onSlotClick }) => {
   return (
     <div className="flex flex-col h-full">
       <div className="text-center pb-3 mb-4 border-b border-[#5a4434]/20">
@@ -25,8 +25,8 @@ const DayColumn = ({ dayLabel, slots, startVariant = 0, isSlotBookable, onBookSl
               key={slot.id}
               slot={slot}
               variantIndex={startVariant + idx}
-              canBook={isSlotBookable ? isSlotBookable(slot) : false}
-              onBook={onBookSlot}
+              isPast={isSlotPast ? isSlotPast(slot) : false}
+              onClick={onSlotClick}
             />
           ))
         )}

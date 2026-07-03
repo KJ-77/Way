@@ -6,34 +6,31 @@ import { IsError, DotsLoader } from "Components/RequestHandler";
 import AuthContext from "Context/AuthContext";
 import { apiFetch } from "../../lib/api";
 import WeeklyGrid from "./components/WeeklyGrid";
+import SlotActionsModal from "./components/SlotActionsModal";
 import BookingModal from "./components/BookingModal";
+import ContactStaffModal from "./components/ContactStaffModal";
 import { getBeirutWeekStart, getBeirutToday, addDays, formatWeekRange } from "Helpers/BeirutWeek";
 
-// Behind <ProtectedRoute> — every viewer is logged in. In addition to the
-// weekly slots, we fetch the user's own subscriptions and use them to compute
-// per-slot booking eligibility. A slot is bookable if:
-//   • The user has an active sub whose package.class_type_id matches the slot
-//   • That sub has remaining_sessions > 0 and hasn't expired
-//   • The slot is in the future (or today) for the currently-viewed week
-//   • The slot isn't cancelled or fully-booked for this week
+// Behind <ProtectedRoute> — every viewer is logged in. Every slot is clickable
+// (cancelled + past slots excepted). Clicking opens an actions picker with
+// "Book a class" and "Buy subscription". From there the flow branches into
+// either BookingModal (client has an eligible sub) or ContactStaffModal
+// (client needs to reach out to Way to book or buy).
 const WeeklySchedule = () => {
   const { user } = useContext(AuthContext);
   const [weekStart, setWeekStart] = useState(() => getBeirutWeekStart());
   const { data, loading, error, fetchData } = useFetch();
 
-  // Separate hook for /user-packages — clients see their own subs (backend
-  // force-filters to the caller's sub for source_pool='client').
   const [subs, setSubs] = useState([]);
   const [subsLoading, setSubsLoading] = useState(true);
 
-  // Refetch schedule when the user pages between weeks.
   useEffect(() => {
     fetchData(`/schedule?week=${weekStart}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weekStart]);
 
-  // Fetch subs once on mount (they don't change per-week). Refreshes after
-  // every booking via `refreshSubs` below.
+  // Fetch subs once on mount, then refresh after every successful booking so
+  // the modal's Sessions Left preview and pickers always reflect current state.
   const refreshSubs = useCallback(async () => {
     setSubsLoading(true);
     try {
@@ -42,8 +39,8 @@ const WeeklySchedule = () => {
       const rows = await res.json();
       setSubs(Array.isArray(rows) ? rows : []);
     } catch {
-      // Non-fatal — user just won't see any Book buttons. The rest of the
-      // schedule renders fine.
+      // Non-fatal — user just won't have subs to book against. The schedule
+      // still renders and the "no active subscription" flow catches this.
       setSubs([]);
     } finally {
       setSubsLoading(false);
@@ -54,60 +51,62 @@ const WeeklySchedule = () => {
     if (user) refreshSubs();
   }, [user, refreshSubs]);
 
-  // Set of class_type_ids that this user's active, non-depleted subs cover.
-  // O(1) membership check downstream. Values in this Set are used both for the
-  // "is this slot bookable?" predicate and for filtering eligible subs when we
-  // pass them into the modal.
-  const eligibleClassTypeIds = useMemo(() => {
-    const ids = new Set();
-    for (const sub of subs) {
-      if (
-        sub.class_type_id &&
-        Number(sub.remaining_sessions) > 0 &&
-        sub.status !== "expired" &&
-        sub.status !== "depleted"
-      ) {
-        ids.add(sub.class_type_id);
-      }
+  const isSlotPast = useCallback(
+    (slot) => {
+      if (!slot) return false;
+      const classDate = addDays(weekStart, slot.day_of_week);
+      return classDate < getBeirutToday();
+    },
+    [weekStart]
+  );
+
+  // ── Interaction state ─────────────────────────────────────────────────────
+  // Single state variable representing which modal is currently open on top of
+  // the grid. Keeps the JSX tree flat and prevents overlap bugs (e.g. two
+  // modals racing to close).
+  //
+  //   null                → nothing open
+  //   { mode: "actions" } → SlotActionsModal
+  //   { mode: "book" }    → BookingModal (client has eligible subs)
+  //   { mode: "contact-missing" } → ContactStaffModal (no sub for this class)
+  //   { mode: "contact-buy" }     → ContactStaffModal (client wants to buy)
+  const [ui, setUi] = useState(null);
+
+  const handleSlotClick = useCallback((slot) => {
+    const classDate = addDays(weekStart, slot.day_of_week);
+    setUi({ mode: "actions", slot, classDate });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weekStart]);
+
+  const closeUi = useCallback(() => setUi(null), []);
+
+  // Book flow — decides at click-time whether the client has any subscription
+  // that covers this slot. Filter here (not on mount) so a booking made in
+  // another tab / a sub added mid-session gets picked up on the next click.
+  const handleChooseBook = useCallback(() => {
+    if (!ui?.slot) return;
+    const slot = ui.slot;
+    const eligibleSubs = subs.filter(
+      (s) =>
+        s.class_type_id === slot.class_type_id &&
+        Number(s.remaining_sessions) > 0 &&
+        s.status !== "expired" &&
+        s.status !== "depleted"
+    );
+    if (eligibleSubs.length === 0) {
+      setUi({ mode: "contact-missing", slot, classDate: ui.classDate });
+      return;
     }
-    return ids;
-  }, [subs]);
+    setUi({ mode: "book", slot, classDate: ui.classDate, eligibleSubs });
+  }, [ui, subs]);
 
-  const currentWeekStart = useMemo(() => getBeirutWeekStart(new Date()), []);
-  // For "is this slot in the past" we compare the slot's actual calendar date
-  // (weekStart + day_of_week) against today (Beirut). Matches the backend's
-  // PAST_BOOKING guard so we don't offer a Book button that will 400.
-  const isSlotBookable = useCallback(
-    (slot) => {
-      if (!slot || slot.is_cancelled || slot.is_fully_booked) return false;
-      if (!eligibleClassTypeIds.has(slot.class_type_id)) return false;
-      const classDate = addDays(weekStart, slot.day_of_week);
-      return classDate >= getBeirutToday();
-    },
-    [eligibleClassTypeIds, weekStart]
-  );
-
-  // Modal state — bookingContext carries {slot, classDate, eligibleSubs}.
-  const [bookingContext, setBookingContext] = useState(null);
-
-  const handleBookSlot = useCallback(
-    (slot) => {
-      const classDate = addDays(weekStart, slot.day_of_week);
-      const eligibleSubs = subs.filter(
-        (s) =>
-          s.class_type_id === slot.class_type_id &&
-          Number(s.remaining_sessions) > 0 &&
-          s.status !== "expired" &&
-          s.status !== "depleted"
-      );
-      if (eligibleSubs.length === 0) return; // Shouldn't happen if isSlotBookable said yes
-      setBookingContext({ slot, classDate, eligibleSubs });
-    },
-    [subs, weekStart]
-  );
+  const handleChooseBuy = useCallback(() => {
+    if (!ui?.slot) return;
+    setUi({ mode: "contact-buy", slot: ui.slot, classDate: ui.classDate });
+  }, [ui]);
 
   const handleBookingSuccess = useCallback(async () => {
-    setBookingContext(null);
+    setUi(null);
     // Refetch both — the slot's attending_count changes and the sub's
     // remaining_sessions decrements.
     await Promise.all([fetchData(`/schedule?week=${weekStart}`), refreshSubs()]);
@@ -116,6 +115,7 @@ const WeeklySchedule = () => {
 
   const slots = data?.slots ?? [];
 
+  const currentWeekStart = useMemo(() => getBeirutWeekStart(new Date()), []);
   const goToPreviousWeek = useCallback(() => setWeekStart((w) => addDays(w, -7)), []);
   const goToNextWeek = useCallback(() => setWeekStart((w) => addDays(w, 7)), []);
   const goToCurrentWeek = useCallback(() => setWeekStart(getBeirutWeekStart()), []);
@@ -150,8 +150,7 @@ const WeeklySchedule = () => {
             )}
           </h1>
           <p className="text-lg lg:text-xl text-[#7a5d4d]">
-            A look at the classes running this week. Book any class your
-            subscription covers.
+            Tap any class to book it with your subscription — or buy one on the spot.
           </p>
         </div>
 
@@ -200,18 +199,37 @@ const WeeklySchedule = () => {
       ) : (
         <WeeklyGrid
           slots={slots}
-          isSlotBookable={isSlotBookable}
-          onBookSlot={handleBookSlot}
+          isSlotPast={isSlotPast}
+          onSlotClick={handleSlotClick}
         />
       )}
 
-      {bookingContext && (
+      {/* Modal stack — only one is ever mounted at a time thanks to the
+          single `ui` state variable. */}
+      {ui?.mode === "actions" && (
+        <SlotActionsModal
+          slot={ui.slot}
+          classDate={ui.classDate}
+          onBook={handleChooseBook}
+          onBuy={handleChooseBuy}
+          onClose={closeUi}
+        />
+      )}
+      {ui?.mode === "book" && (
         <BookingModal
-          slot={bookingContext.slot}
-          classDate={bookingContext.classDate}
-          eligibleSubs={bookingContext.eligibleSubs}
-          onClose={() => setBookingContext(null)}
+          slot={ui.slot}
+          classDate={ui.classDate}
+          eligibleSubs={ui.eligibleSubs}
+          onClose={closeUi}
           onBooked={handleBookingSuccess}
+        />
+      )}
+      {(ui?.mode === "contact-missing" || ui?.mode === "contact-buy") && (
+        <ContactStaffModal
+          mode={ui.mode === "contact-missing" ? "missing-sub" : "buy"}
+          slot={ui.slot}
+          classDate={ui.classDate}
+          onClose={closeUi}
         />
       )}
     </Container>

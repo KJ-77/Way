@@ -1,27 +1,29 @@
-import { Prohibit, Ticket } from "@phosphor-icons/react";
+import { Prohibit } from "@phosphor-icons/react";
 
 // Single class slot card. Two brown variants alternate by slot id for warmth
 // and visual rhythm in the weekly grid (inspired by the studio's brand palette).
 //
-// Visual states (cascade — strongest wins):
-//   1. Cancelled (per-week override)  → fully greyed-out, line-through, "Cancelled"
-//      badge + a hover tooltip with the reason when one was provided.
-//   2. Fully booked (per-week override) → desaturated muted variant + badge.
-//   3. Normal → dark/light brown alternating variant.
+// Visual + interaction states (cascade — strongest wins):
+//   1. Cancelled (per-week override)  → greyed-out, line-through, "Cancelled"
+//      badge + hover tooltip with the reason when one was provided.
+//      Non-interactive.
+//   2. Past (slot occurrence in Beirut is before today) → dimmed, non-interactive.
+//   3. Fully booked (per-week override) → desaturated muted variant + badge.
+//      Still clickable (studio allows overbooking).
+//   4. Normal → dark/light brown alternating variant. Clickable.
 //
-// Booking CTA: when the parent passes `canBook=true` (client has an eligible
-// subscription for this class AND the occurrence is in the future AND the slot
-// isn't cancelled/fully-booked), we render an inline "Book" button that opens
-// the BookingModal via the onBook callback.
+// Clicking a clickable card fires onClick(slot) — the parent opens the
+// SlotActionsModal (Book / Buy picker) from there.
 const VARIANTS = {
   dark: "bg-[#5a4434] text-white",
   light: "bg-[#a6826e] text-white",
   bookedDark: "bg-[#5a4434]/55 text-white/85",
   bookedLight: "bg-[#a6826e]/55 text-white/85",
   cancelled: "bg-gray-200 text-gray-500 border border-gray-300",
+  past: "bg-[#5a4434]/25 text-white/70",
 };
 
-const SlotCard = ({ slot, variantIndex = 0, canBook = false, onBook }) => {
+const SlotCard = ({ slot, variantIndex = 0, isPast = false, onClick }) => {
   const start = (slot.start_time || "").slice(0, 5);
   const end = (slot.end_time || "").slice(0, 5);
   // class_type_name is the joined class name from the backend; fall back to
@@ -31,21 +33,53 @@ const SlotCard = ({ slot, variantIndex = 0, canBook = false, onBook }) => {
   const isFullyBooked = !!slot.is_fully_booked;
   const isDark = variantIndex % 2 === 0;
 
-  // Pick the appropriate variant — cancelled trumps fully-booked trumps normal.
+  // Cancelled/past slots don't fire onClick; fully-booked still does.
+  const isInteractive = !isCancelled && !isPast;
+
+  // Pick the appropriate variant — cancelled > past > fully-booked > normal.
   let variantClasses;
   if (isCancelled) {
     variantClasses = VARIANTS.cancelled;
+  } else if (isPast) {
+    variantClasses = VARIANTS.past;
   } else if (isFullyBooked) {
     variantClasses = isDark ? VARIANTS.bookedDark : VARIANTS.bookedLight;
   } else {
     variantClasses = isDark ? VARIANTS.dark : VARIANTS.light;
   }
 
+  const handleClick = () => {
+    if (isInteractive) onClick?.(slot);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!isInteractive) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick?.(slot);
+    }
+  };
+
   return (
     // `group` enables the tooltip-on-hover (sibling element opens when the
     // parent is hovered). Tailwind native — no JS state needed.
     <div
-      className={`group relative rounded-md px-5 py-5 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-y-2 ${variantClasses}`}
+      className={`group relative rounded-md px-5 py-5 shadow-sm transition-all flex flex-col gap-y-2 ${variantClasses} ${
+        isInteractive
+          ? "cursor-pointer hover:shadow-md hover:-translate-y-0.5"
+          : "cursor-not-allowed"
+      }`}
+      role={isInteractive ? "button" : undefined}
+      tabIndex={isInteractive ? 0 : undefined}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      aria-label={
+        isInteractive
+          ? `Book or buy ${classType} at ${start}`
+          : isCancelled
+          ? `${classType} at ${start} — cancelled`
+          : `${classType} at ${start} — past`
+      }
     >
       {/* Cancelled badge — replaces fully-booked badge when both would apply */}
       {isCancelled && (
@@ -53,7 +87,12 @@ const SlotCard = ({ slot, variantIndex = 0, canBook = false, onBook }) => {
           <Prohibit size={10} weight="bold" /> Cancelled
         </span>
       )}
-      {!isCancelled && isFullyBooked && (
+      {!isCancelled && isPast && (
+        <span className="absolute top-2 right-2 text-[10px] uppercase tracking-widest font-semibold bg-white/15 px-2 py-0.5 rounded">
+          Past
+        </span>
+      )}
+      {!isCancelled && !isPast && isFullyBooked && (
         <span className="absolute top-2 right-2 text-[10px] uppercase tracking-widest font-semibold bg-white/15 px-2 py-0.5 rounded">
           Fully Booked
         </span>
@@ -81,20 +120,6 @@ const SlotCard = ({ slot, variantIndex = 0, canBook = false, onBook }) => {
         >
           with {slot.tutor_name}
         </p>
-      )}
-
-      {/* Book CTA — only rendered when the parent flags this occurrence as
-          eligible for the current user. Sits at the bottom of the card so
-          the tutor line + card body stay above it. */}
-      {canBook && (
-        <button
-          type="button"
-          onClick={() => onBook?.(slot)}
-          className="mt-3 inline-flex items-center justify-center gap-x-1.5 w-full px-3 py-1.5 rounded-md bg-white/95 text-[#5a4434] text-xs font-medium hover:bg-white transition-colors"
-        >
-          <Ticket size={14} weight="bold" />
-          Book
-        </button>
       )}
 
       {/* Tooltip — only renders for cancelled slots with a reason.
