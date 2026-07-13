@@ -7,6 +7,13 @@
  * To switch to real backend: set MOCK_MODE = false in Utilities/BASE_URL.jsx
  */
 
+// Coffee bar photos — real bundled assets. Imported (not inline "placeholder:"
+// strings) so Vite fingerprints them and emits hashed URLs; they then flow
+// through resolveImageUrl() untouched, since they don't start with "placeholder:".
+import coffeeBarInterior from "assets/images/home/coffee-bar-interior.webp";
+import coffeeBarCounter from "assets/images/home/coffee-bar-counter.webp";
+import coffeeBarSeating from "assets/images/home/coffee-bar-seating.webp";
+
 // Helper: generate future dates for sessions
 const futureDate = (daysFromNow) => {
   const d = new Date();
@@ -34,11 +41,7 @@ export const mockHomeData = {
     coffee_bar: {
       title: "Our CoffeeBar",
       text: "A cozy space to relax, create, and connect with fellow artists over a warm cup of coffee.",
-      gallery: [
-        "placeholder:CoffeeBar Interior:800:600",
-        "placeholder:CoffeeBar Counter:800:600",
-        "placeholder:CoffeeBar Seating:800:600",
-      ],
+      gallery: [coffeeBarInterior, coffeeBarCounter, coffeeBarSeating],
     },
     our_tutors: {
       title: "Our Tutors",

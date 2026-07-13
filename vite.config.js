@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 // Vite config that mirrors the CRA jsconfig "baseUrl: ./src" so all the
-// CRA-style bare imports ("Pages/...", "Components/...", "assests/...") resolve.
+// CRA-style bare imports ("Pages/...", "Components/...", "assets/...") resolve.
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -19,7 +19,7 @@ export default defineConfig({
       Layout: path.resolve(__dirname, "./src/Layout"),
       Pages: path.resolve(__dirname, "./src/Pages"),
       Utilities: path.resolve(__dirname, "./src/Utilities"),
-      assests: path.resolve(__dirname, "./src/assests"),
+      assets: path.resolve(__dirname, "./src/assets"),
       data: path.resolve(__dirname, "./src/data"),
       form: path.resolve(__dirname, "./src/form"),
     },

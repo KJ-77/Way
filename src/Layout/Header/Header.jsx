@@ -4,8 +4,8 @@ import UserNavControl from "Components/auth/UserNavControl";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Container from "Components/Container/Container";
 import { X } from "@phosphor-icons/react";
-import blackLogo from "assests/black-logo.png";
-import whiteLogo from "assests/white-logo.png";
+import blackLogo from "assets/black-logo.png";
+import whiteLogo from "assets/white-logo.png";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import AuthContext from "Context/AuthContext";
 const Header = () => {
@@ -97,8 +97,8 @@ const Header = () => {
           isScrolled
             ? "bg-white shadow-md"
             : isHomePage
-            ? "bg-transparent"
-            : "bg-white "
+              ? "bg-transparent"
+              : "bg-white "
         }`}
       >
         <Container className="Container">
@@ -131,8 +131,8 @@ const Header = () => {
                     isScrolled
                       ? "text-gray-900"
                       : showWhiteOnHome
-                      ? "text-white"
-                      : "text-gray-900"
+                        ? "text-white"
+                        : "text-gray-900"
                   } hover:${
                     showWhiteOnHome ? "text-gray-300" : "text-gray-600"
                   } text-sm font-medium block transition-all duration-300`}
@@ -179,8 +179,8 @@ const Header = () => {
                     isScrolled
                       ? "text-gray-900"
                       : showWhiteOnHome
-                      ? "text-white"
-                      : "text-gray-900"
+                        ? "text-white"
+                        : "text-gray-900"
                   } hover:${
                     showWhiteOnHome ? "text-gray-300" : "text-gray-600"
                   }  font-medium block transition-all duration-300 ${
@@ -220,8 +220,8 @@ const Header = () => {
                   isScrolled
                     ? "text-gray-900"
                     : showWhiteOnHome
-                    ? "text-white"
-                    : "text-gray-900"
+                      ? "text-white"
+                      : "text-gray-900"
                 } hover:${
                   showWhiteOnHome ? "text-gray-300" : "text-gray-600"
                 }  font-medium block transition-all duration-300 ${
@@ -236,8 +236,8 @@ const Header = () => {
                   isScrolled
                     ? "text-gray-900"
                     : showWhiteOnHome
-                    ? "text-white"
-                    : "text-gray-900"
+                      ? "text-white"
+                      : "text-gray-900"
                 } hover:${
                   showWhiteOnHome ? "text-gray-300" : "text-gray-600"
                 }  font-medium block transition-all duration-300 ${
@@ -252,8 +252,8 @@ const Header = () => {
                   isScrolled
                     ? "text-gray-900"
                     : showWhiteOnHome
-                    ? "text-white"
-                    : "text-gray-900"
+                      ? "text-white"
+                      : "text-gray-900"
                 } hover:${
                   showWhiteOnHome ? "text-gray-300" : "text-gray-600"
                 }  font-medium block transition-all duration-300 ${
@@ -268,8 +268,8 @@ const Header = () => {
                   isScrolled
                     ? "text-gray-900"
                     : showWhiteOnHome
-                    ? "text-white border border-white px-10 py-[2px] rounded-xl hover:bg-white hover:text-black"
-                    : "text-gray-900 border border-black-900 px-6 py-[2px] rounded-xl"
+                      ? "text-white border border-white px-10 py-[2px] rounded-xl hover:bg-white hover:text-black"
+                      : "text-gray-900 border border-black-900 px-6 py-[2px] rounded-xl"
                 } hover:${
                   showWhiteOnHome ? "text-gray-300" : "text-gray-600"
                 }  font-medium block transition-all duration-300 ${
@@ -292,9 +292,7 @@ const Header = () => {
 
             <button
               className={`lg:hidden flex items-center justify-center relative p-3 rounded-lg group transition-all duration-300 ${
-                showWhiteOnHome
-                  ? "hover:bg-white/10"
-                  : "hover:bg-black/5"
+                showWhiteOnHome ? "hover:bg-white/10" : "hover:bg-black/5"
               }`}
               onClick={() => setIsDrawerOpen(true)}
               aria-label="Open menu"
@@ -305,8 +303,8 @@ const Header = () => {
                     isScrolled
                       ? "bg-black"
                       : showWhiteOnHome
-                      ? "bg-white"
-                      : "bg-black"
+                        ? "bg-white"
+                        : "bg-black"
                   } group-hover:scale-110`}
                 ></span>
                 <span
@@ -314,8 +312,8 @@ const Header = () => {
                     isScrolled
                       ? "bg-black"
                       : showWhiteOnHome
-                      ? "bg-white"
-                      : "bg-black"
+                        ? "bg-white"
+                        : "bg-black"
                   } group-hover:w-6 group-hover:scale-110`}
                 ></span>
                 <span
@@ -323,8 +321,8 @@ const Header = () => {
                     isScrolled
                       ? "bg-black"
                       : showWhiteOnHome
-                      ? "bg-white"
-                      : "bg-black"
+                        ? "bg-white"
+                        : "bg-black"
                   } group-hover:scale-110`}
                 ></span>
               </div>

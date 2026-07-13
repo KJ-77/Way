@@ -6,8 +6,8 @@
 /*
 @font-face {
   font-family: "Jalapeno";
-  src: url("./assests/font/Jalapeño.ttf") format("truetype"),
-    url("./assests/font/Jalapeño.otf") format("opentype");
+  src: url("./assets/font/Jalapeño.ttf") format("truetype"),
+    url("./assets/font/Jalapeño.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
@@ -17,14 +17,14 @@
 /*
 @font-face {
   font-family: "Century";
-  src: url("./assests/font/Century_Normal.ttf") format("truetype");
+  src: url("./assets/font/Century_Normal.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Century";
-  src: url("./assests/font/Century_Bold.ttf") format("truetype");
+  src: url("./assets/font/Century_Bold.ttf") format("truetype");
   font-weight: bold;
   font-style: normal;
 }
@@ -32,7 +32,7 @@
 
 /* @font-face {
   font-family: "Century";
-  src: url("./assests/font/Century_Bold_Italic.ttf") format("truetype");
+  src: url("./assets/font/Century_Bold_Italic.ttf") format("truetype");
   font-weight: bold;
   font-style: italic;
 } */

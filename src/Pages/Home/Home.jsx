@@ -3,9 +3,22 @@ import useFetch from "Hooks/useFetch";
 import { DotsLoader } from "Components/RequestHandler";
 import Container from "Components/Container/Container";
 import Button from "Components/form/Button";
-import { ArrowRight, WhatsappLogo, InstagramLogo, Clock, CaretLeft, CaretRight } from "@phosphor-icons/react";
+import {
+  ArrowRight,
+  WhatsappLogo,
+  InstagramLogo,
+  Clock,
+  CaretLeft,
+  CaretRight,
+} from "@phosphor-icons/react";
 import AboutUs from "./AboutUs";
-import heroImage from "assests/hero-image.jpg";
+import heroImage from "assets/images/home/hero-image.jpg";
+import wheelthrowingImage from "assets/images/home/wheelthrowing.webp";
+import sculptureImage from "assets/images/home/sculpture.webp";
+import paintingOnCanvasImage from "assets/images/home/painting-on-canvas.webp";
+import handbuildingImage from "assets/images/home/handbuilding.webp";
+import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.webp";
+import workshopImage from "assets/images/home/workshop-image.webp";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -140,7 +153,7 @@ const Home = () => {
             {/* Large Workshop Image */}
             <div className="lg:col-span-2 rounded-2xl lg:rounded-[32px] overflow-hidden h-[300px] lg:h-[400px] bg-gray-200">
               <div className="w-full h-full flex items-center justify-center text-gray-500">
-                [Workshop Image - People around table doing activities]
+                <img src={workshopImage} alt="Workshop" className="w-full h-full object-cover" />
               </div>
             </div>
 
@@ -154,11 +167,11 @@ const Home = () => {
             {/* Bottom Right - Tutor Card with Illustration */}
             <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-secondary flex flex-col items-center justify-center text-white p-8">
               <div className="text-center">
-                <div className="mb-4 text-6xl">
-                  [Portrait Illustration]
-                </div>
+                <div className="mb-4 text-6xl">[Portrait Illustration]</div>
                 <h3 className="text-xl font-semibold mb-1">MAYA DAHDOUH</h3>
-                <p className="text-sm opacity-90">Painter and Assistant Ceramicist</p>
+                <p className="text-sm opacity-90">
+                  Painter and Assistant Ceramicist
+                </p>
               </div>
             </div>
           </div>
@@ -167,7 +180,9 @@ const Home = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* CoffeeBar Card */}
             <div className="text-center lg:text-left">
-              <h3 className="text-2xl lg:text-3xl italic mb-4">Our CoffeeBar</h3>
+              <h3 className="text-2xl lg:text-3xl italic mb-4">
+                Our CoffeeBar
+              </h3>
               <p className="text-gray-700 mb-4">
                 Located on Rue du Liban, Way offers a cozy and stylish space to
                 freely create
@@ -257,7 +272,11 @@ const Home = () => {
                 <div className="flex flex-col">
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
-                      [Handbuilding Image]
+                      <img
+                      src={handbuildingImage}
+                      alt="Handbuilding"
+                      className="w-full h-full object-cover"
+                    />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
@@ -271,7 +290,12 @@ const Home = () => {
                     A pottery technique where clay is molded by hand into unique
                     shapes and textures.
                   </p>
-                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                  <Button
+                    to="/classes"
+                    variant="link"
+                    size="sm"
+                    className="self-start"
+                  >
                     Book now
                     <ArrowRight size={12} />
                   </Button>
@@ -282,12 +306,15 @@ const Home = () => {
               <SwiperSlide>
                 <div className="flex flex-col">
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
-                    <div className="w-full h-full flex items-center justify-center text-gray-500">
-                      [Wheel Throwing Image]
-                    </div>
+                    <img
+                      src={wheelthrowingImage}
+                      alt="Wheel Throwing"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <h3 className="text-xl mb-2">
-                    <span className="italic">Wheel Throwing</span> (The Explorer)
+                    <span className="italic">Wheel Throwing</span> (The
+                    Explorer)
                   </h3>
                   <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
                     <Clock size={18} weight="bold" />
@@ -297,7 +324,12 @@ const Home = () => {
                     Wheel throwing is shaping clay on a spinning wheel to create
                     smooth, symmetrical forms.
                   </p>
-                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                  <Button
+                    to="/classes"
+                    variant="link"
+                    size="sm"
+                    className="self-start"
+                  >
                     Book now
                     <ArrowRight size={12} />
                   </Button>
@@ -309,7 +341,11 @@ const Home = () => {
                 <div className="flex flex-col">
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
-                      [Sculpting Image]
+                      <img
+                        src={sculptureImage}
+                        alt="Sculpting"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
@@ -323,7 +359,12 @@ const Home = () => {
                     Sculpting is shaping and carving clay or other materials to
                     create expressive, three-dimensional art
                   </p>
-                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                  <Button
+                    to="/classes"
+                    variant="link"
+                    size="sm"
+                    className="self-start"
+                  >
                     Book now
                     <ArrowRight size={12} />
                   </Button>
@@ -346,10 +387,15 @@ const Home = () => {
                     <span className="italic">Upon Enquiry</span>
                   </div>
                   <p className="text-gray-700 text-sm mb-4 flex-grow">
-                    Open Studio is a free-creation where you use our space, tools,
-                    and materials to work at your own pace.
+                    Open Studio is a free-creation where you use our space,
+                    tools, and materials to work at your own pace.
                   </p>
-                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                  <Button
+                    to="/classes"
+                    variant="link"
+                    size="sm"
+                    className="self-start"
+                  >
                     Book now
                     <ArrowRight size={12} />
                   </Button>
@@ -361,7 +407,11 @@ const Home = () => {
                 <div className="flex flex-col">
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
-                      [Painting on Canvas Image]
+                      <img
+                      src={paintingOnCanvasImage}
+                      alt="Painting on Canvas"
+                      className="w-full h-full object-cover"
+                    />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
@@ -375,7 +425,12 @@ const Home = () => {
                     Painting on canvas is expressing ideas and emotions through
                     color and texture on a blank surface
                   </p>
-                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                  <Button
+                    to="/classes"
+                    variant="link"
+                    size="sm"
+                    className="self-start"
+                  >
                     Book now
                     <ArrowRight size={12} />
                   </Button>
@@ -387,7 +442,11 @@ const Home = () => {
                 <div className="flex flex-col">
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
-                      [Handbuilding Mastery Image]
+                      <img
+                      src={handbuildingMasteryImage}
+                      alt="Handbuilding (Mastery)"
+                      className="w-full h-full object-cover"
+                    />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
@@ -399,10 +458,15 @@ const Home = () => {
                   </div>
                   <p className="text-gray-700 text-sm mb-4 flex-grow">
                     Handbuilding Advanced takes your skills further exploring
-                    complex forms, refined techniques, and more creative freedom in
-                    shaping clay.
+                    complex forms, refined techniques, and more creative freedom
+                    in shaping clay.
                   </p>
-                  <Button to="/classes" variant="link" size="sm" className="self-start">
+                  <Button
+                    to="/classes"
+                    variant="link"
+                    size="sm"
+                    className="self-start"
+                  >
                     Book now
                     <ArrowRight size={12} />
                   </Button>

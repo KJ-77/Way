@@ -4,6 +4,7 @@ import { Navigation, Pagination } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { IMAGE_URL, MOCK_MODE } from "Utilities/BASE_URL";
 import { resolveImageUrl } from "data/mockImages";
+import aboutUsBannerImage from "assets/images/about-us/about-us-image.jpeg";
 import Button from "Components/form/Button";
 
 // Import Swiper styles
@@ -58,7 +59,7 @@ const AboutUs = ({ aboutUsData }) => {
         {/* Banner Image */}
         <div className="mb-10">
           <img
-            src={MOCK_MODE ? resolveImageUrl(banner_image, IMAGE_URL) : `${IMAGE_URL}${banner_image}`}
+            src={aboutUsBannerImage}
             alt="About Us Banner"
             className="w-full lg:h-[600px] object-cover rounded-[32px]"
           />
