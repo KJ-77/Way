@@ -12,7 +12,10 @@ import {
   CaretRight,
 } from "@phosphor-icons/react";
 import AboutUs from "./AboutUs";
-import heroImage from "assets/images/home/hero-image.jpg";
+import heroSlide1 from "assets/images/landing/hero-1.webp";
+import heroSlide2 from "assets/images/landing/hero-2.webp";
+import heroSlide3 from "assets/images/landing/hero-3.webp";
+import heroSlide4 from "assets/images/landing/hero-4.webp";
 import wheelthrowingImage from "assets/images/home/wheelthrowing.webp";
 import sculptureImage from "assets/images/home/sculpture.webp";
 import paintingOnCanvasImage from "assets/images/home/painting-on-canvas.webp";
@@ -21,10 +24,15 @@ import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.we
 import workshopImage from "assets/images/home/workshop-image.webp";
 import studioImage from "assets/images/home/studio-picture.jpg";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper/modules";
+import { Pagination, Navigation, Autoplay, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
+import "swiper/css/effect-fade";
+
+// Hero background slideshow images (auto-rotating carousel that replaces the
+// single static hero image).
+const HERO_SLIDES = [heroSlide1, heroSlide2, heroSlide3, heroSlide4];
 
 const Home = () => {
   const { data, isLoading, fetchData } = useFetch();
@@ -48,11 +56,26 @@ const Home = () => {
     <main className="relative">
       {/* Hero Section */}
       <div className="relative h-screen w-full overflow-hidden">
-        <img
-          src={heroImage}
-          alt="hero"
-          className="absolute top-0 left-0 w-full h-full object-cover z-0"
-        />
+        {/* Auto-rotating hero background carousel (fades between landing photos) */}
+        <Swiper
+          modules={[Autoplay, EffectFade]}
+          effect="fade"
+          fadeEffect={{ crossFade: true }}
+          loop={true}
+          allowTouchMove={false}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          className="hero-swiper absolute inset-0 w-full h-full z-0"
+        >
+          {HERO_SLIDES.map((slide, index) => (
+            <SwiperSlide key={index}>
+              <img
+                src={slide}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
 
         <div className="absolute right-10 bottom-20 z-[10000] text-white hidden lg:flex items-center gap-x-3">
           <a
@@ -79,7 +102,7 @@ const Home = () => {
           <Container>
             <div className="flex flex-col text-white px-4 sm:px-0">
               {data?.data?.[0]?.title ? (
-                <h1 className="text-3xl sm:text-4xl md:text-7xl mb-2 w-full lg:w-1/2">
+                <h1 className="title text-3xl sm:text-4xl md:text-7xl mb-2 w-full lg:w-1/2">
                   {(() => {
                     const title = data.data[0].title;
                     const words = title.split(" ");
@@ -152,9 +175,9 @@ const Home = () => {
           {/* Visual Grid - 3 Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-12 lg:mb-16">
             {/* Large Workshop Image */}
-            <div className="lg:col-span-2 rounded-2xl lg:rounded-[32px] overflow-hidden h-[300px] lg:h-[400px] bg-gray-200">
+            <div className="lg:col-span-2 rounded-2xl lg:rounded-[32px] overflow-hidden h-[300px] lg:h-[460px] bg-gray-200">
               <div className="w-full h-full flex items-center justify-center text-gray-500">
-                <img src={workshopImage} alt="Workshop" className="w-full h-full object-cover" />
+                <img src={workshopImage} alt="Workshop" className="w-full h-full object-cover object-[50%_30%]" />
               </div>
             </div>
 

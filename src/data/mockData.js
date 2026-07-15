@@ -16,6 +16,7 @@ import coffeeBarSeating from "assets/images/home/coffee-bar-seating.webp";
 
 // Tutor portraits — same bundled-asset passthrough as the coffee bar images above.
 import instructor1 from "assets/images/home/instructor-1.webp";
+import instructor2 from "assets/images/home/instructor-2.webp";
 import instructor3 from "assets/images/home/instructor-3.webp";
 
 // Helper: generate future dates for sessions
@@ -50,7 +51,7 @@ export const mockHomeData = {
     our_tutors: {
       title: "Our Tutors",
       text: "Meet our talented team of artists and craftspeople who guide you on your creative journey.",
-      gallery: [instructor1, instructor3],
+      gallery: [instructor1, instructor2, instructor3],
     },
   },
 };

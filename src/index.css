@@ -3,15 +3,14 @@
 @tailwind utilities;
 
 /* Font imports */
-/*
 @font-face {
   font-family: "Jalapeno";
-  src: url("./assets/font/Jalapeño.ttf") format("truetype"),
-    url("./assets/font/Jalapeño.otf") format("opentype");
+  src: url("./assets/font/Jalapeno.otf") format("opentype"),
+    url("./assets/font/Jalapeno.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
-*/
 
 /* Disabled temporarily: Century fonts cause OTS decode errors in Chrome */
 /*
@@ -38,14 +37,14 @@
 } */
 
 body {
-  /* Use system serif as fallback until custom fonts are fixed */
+  /* Use system serif as fallback for body copy (Jalapeno is a display face,
+     used only for the hero title). */
   font-family: serif;
 }
 
 /* Custom font classes */
 .title {
-  /* Fall back until Jalapeno font path is normalized */
-  font-family: sans-serif;
+  font-family: "Jalapeno", sans-serif;
 }
 
 .century {
@@ -55,10 +54,16 @@ body {
 
 /* Outline text effect for last word */
 .title-outline {
-  /* Fall back until Jalapeno font path is normalized */
-  font-family: sans-serif;
+  font-family: "Jalapeno", sans-serif;
   -webkit-text-stroke: 2px white;
   -webkit-text-fill-color: transparent;
   text-stroke: 2px white;
   color: transparent;
+}
+
+/* Hero background slideshow — ensure Swiper + slides fill the hero container */
+.hero-swiper,
+.hero-swiper .swiper-wrapper,
+.hero-swiper .swiper-slide {
+  height: 100%;
 }
