@@ -4,7 +4,7 @@ import { Navigation, Pagination } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { IMAGE_URL, MOCK_MODE } from "Utilities/BASE_URL";
 import { resolveImageUrl } from "data/mockImages";
-import aboutUsBannerImage from "assets/images/about-us/about-us-image.jpeg";
+import aboutUsBannerImage from "assets/images/about-us/about-us-image.webp";
 import Button from "Components/form/Button";
 
 // Import Swiper styles

@@ -3,7 +3,7 @@ import useFetch from "Hooks/useFetch";
 import { DotsLoader, IsError } from "Components/RequestHandler";
 import Container from "Components/Container/Container";
 import ProductRequestModal from "./components/ProductRequestModal";
-import image from "assets/4.jpg";
+import image from "assets/shop-product-placeholder.webp";
 
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState(null);

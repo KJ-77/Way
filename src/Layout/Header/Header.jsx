@@ -4,8 +4,8 @@ import UserNavControl from "Components/auth/UserNavControl";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Container from "Components/Container/Container";
 import { X } from "@phosphor-icons/react";
-import blackLogo from "assets/black-logo.png";
-import whiteLogo from "assets/white-logo.png";
+import blackLogo from "assets/black-logo.webp";
+import whiteLogo from "assets/white-logo.webp";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import AuthContext from "Context/AuthContext";
 const Header = () => {

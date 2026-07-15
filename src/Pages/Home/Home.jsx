@@ -19,6 +19,7 @@ import paintingOnCanvasImage from "assets/images/home/painting-on-canvas.webp";
 import handbuildingImage from "assets/images/home/handbuilding.webp";
 import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.webp";
 import workshopImage from "assets/images/home/workshop-image.webp";
+import studioImage from "assets/images/home/studio-picture.jpg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -376,7 +377,11 @@ const Home = () => {
                 <div className="flex flex-col">
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
-                      [Open Studio Image]
+                      <img
+                        src={studioImage}
+                        alt="Open Studio"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
