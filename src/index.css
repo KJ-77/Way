@@ -55,9 +55,9 @@ body {
 /* Outline text effect for last word */
 .title-outline {
   font-family: "Jalapeno", sans-serif;
-  -webkit-text-stroke: 2px white;
+  -webkit-text-stroke: 3px white;
   -webkit-text-fill-color: transparent;
-  text-stroke: 2px white;
+  text-stroke: 3px white;
   color: transparent;
 }
 

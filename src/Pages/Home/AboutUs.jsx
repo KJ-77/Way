@@ -19,7 +19,7 @@ const AboutUs = ({ aboutUsData }) => {
     aboutUsData;
 
   return (
-    <section id="our-space" className="bg-white py-secondary lg:py-primary">
+    <section id="our-space" className="bg-white py-secondary lg:pt-20 lg:pb-primary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Title and Description */}
         <div className="mb-10 lg:mb-24 lg:w-3/4 mx-auto">

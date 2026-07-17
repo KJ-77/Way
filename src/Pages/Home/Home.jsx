@@ -18,7 +18,6 @@ import heroSlide3 from "assets/images/landing/hero-3.webp";
 import heroSlide4 from "assets/images/landing/hero-4.webp";
 import wheelthrowingImage from "assets/images/home/wheelthrowing.webp";
 import sculptureImage from "assets/images/home/sculpture.webp";
-import paintingOnCanvasImage from "assets/images/home/painting-on-canvas.webp";
 import handbuildingImage from "assets/images/home/handbuilding.webp";
 import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.webp";
 import workshopImage from "assets/images/home/workshop-image.webp";
@@ -152,7 +151,7 @@ const Home = () => {
       </div>
 
       {/* Atelier Section */}
-      <section className="py-secondary lg:py-primary bg-white">
+      <section className="py-secondary lg:pt-primary lg:pb-20 bg-white">
         <Container>
           {/* Text Content */}
           <div className="text-center mb-12 lg:mb-16">
@@ -242,7 +241,7 @@ const Home = () => {
       </section>
 
       {/* Our Classes Section */}
-      <section className="py-secondary lg:py-primary bg-white">
+      <section className="py-secondary lg:py-20 bg-white">
         <Container>
           {/* Section Header */}
           <div className="text-center mb-12 lg:mb-16">
@@ -417,41 +416,6 @@ const Home = () => {
                   <p className="text-gray-700 text-sm mb-4 flex-grow">
                     Open Studio is a free-creation where you use our space,
                     tools, and materials to work at your own pace.
-                  </p>
-                  <Button
-                    to="/classes"
-                    variant="link"
-                    size="sm"
-                    className="self-start"
-                  >
-                    Book now
-                    <ArrowRight size={12} />
-                  </Button>
-                </div>
-              </SwiperSlide>
-
-              {/* Card 5: Painting on Canvas */}
-              <SwiperSlide>
-                <div className="flex flex-col">
-                  <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
-                    <div className="w-full h-full flex items-center justify-center text-gray-500">
-                      <img
-                      src={paintingOnCanvasImage}
-                      alt="Painting on Canvas"
-                      className="w-full h-full object-cover"
-                    />
-                    </div>
-                  </div>
-                  <h3 className="text-xl mb-2">
-                    <span className="italic">Painting on Canvas</span>
-                  </h3>
-                  <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
-                    <Clock size={18} weight="bold" />
-                    <span>3hrs</span>
-                  </div>
-                  <p className="text-gray-700 text-sm mb-4 flex-grow">
-                    Painting on canvas is expressing ideas and emotions through
-                    color and texture on a blank surface
                   </p>
                   <Button
                     to="/classes"
