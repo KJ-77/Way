@@ -21,7 +21,9 @@ import sculptureImage from "assets/images/home/sculpture.webp";
 import handbuildingImage from "assets/images/home/handbuilding.webp";
 import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.webp";
 import workshopImage from "assets/images/home/workshop-image.webp";
-import studioImage from "assets/images/home/studio-picture.jpg";
+import studioImage from "assets/images/home/studio-picture.webp";
+import coffeeBarImage from "assets/images/home/our-coffeebar.webp";
+import tutorImage from "assets/images/home/tutors-landscape.webp";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay, EffectFade } from "swiper/modules";
 import "swiper/css";
@@ -180,27 +182,41 @@ const Home = () => {
               </div>
             </div>
 
+            {/* Mobile only: CoffeeBar heading above its image (desktop shows it in the row below) */}
+            <div className="lg:hidden text-center mt-2">
+              <h3 className="text-2xl italic mb-2">Our CoffeeBar</h3>
+              <p className="text-gray-700">
+                Located on Rue du Liban, Way offers a cozy and stylish space to
+                freely create
+              </p>
+            </div>
+
             {/* Bottom Left - Coffeeshop Interior */}
             <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-gray-200">
               <div className="w-full h-full flex items-center justify-center text-gray-500">
-                [Coffeeshop Interior - 3D Render]
+                <img src={coffeeBarImage} alt="CoffeeBar" className="w-full h-full object-cover object-bottom" />
               </div>
             </div>
 
+            {/* Mobile only: Tutors heading above its image */}
+            <div className="lg:hidden text-center mt-2">
+              <h3 className="text-2xl italic mb-2">Our Tutors</h3>
+              <p className="text-gray-700">
+                Get to know the skilled tutors at Way, here to help you grow and
+                refine your craft.
+              </p>
+            </div>
+
             {/* Bottom Right - Tutor Card with Illustration */}
-            <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-secondary flex flex-col items-center justify-center text-white p-8">
-              <div className="text-center">
-                <div className="mb-4 text-6xl">[Portrait Illustration]</div>
-                <h3 className="text-xl font-semibold mb-1">MAYA DAHDOUH</h3>
-                <p className="text-sm opacity-90">
-                  Painter and Assistant Ceramicist
-                </p>
+            <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-gray-200">
+              <div className="w-full h-full flex items-center justify-center text-gray-500">
+                <img src={tutorImage} alt="Tutor" className="w-full h-full object-cover object-[50%_30%]" />
               </div>
             </div>
           </div>
 
-          {/* Feature Cards - CoffeeBar and Tutors */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          {/* Feature Cards - CoffeeBar and Tutors (desktop only; mobile shows the headings above each image) */}
+          <div className="hidden lg:grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* CoffeeBar Card */}
             <div className="text-center lg:text-left">
               <h3 className="text-2xl lg:text-3xl italic mb-4">
@@ -210,14 +226,6 @@ const Home = () => {
                 Located on Rue du Liban, Way offers a cozy and stylish space to
                 freely create
               </p>
-              <div className="flex items-center justify-center lg:justify-start gap-4 text-primary">
-                <button className="hover:text-secondary hover:scale-110 transition-all duration-300 cursor-pointer">
-                  <CaretLeft size={24} weight="bold" />
-                </button>
-                <button className="hover:text-secondary hover:scale-110 transition-all duration-300 cursor-pointer">
-                  <CaretRight size={24} weight="bold" />
-                </button>
-              </div>
             </div>
 
             {/* Tutors Card */}
@@ -227,14 +235,6 @@ const Home = () => {
                 Get to know the skilled tutors at Way, here to help you grow and
                 refine your craft.
               </p>
-              <div className="flex items-center justify-center lg:justify-start gap-4 text-primary">
-                <button className="hover:text-secondary hover:scale-110 transition-all duration-300 cursor-pointer">
-                  <CaretLeft size={24} weight="bold" />
-                </button>
-                <button className="hover:text-secondary hover:scale-110 transition-all duration-300 cursor-pointer">
-                  <CaretRight size={24} weight="bold" />
-                </button>
-              </div>
             </div>
           </div>
         </Container>

@@ -153,7 +153,7 @@ const AboutUs = ({ aboutUsData }) => {
                           <img
                             src={MOCK_MODE ? resolveImageUrl(image, IMAGE_URL) : `${IMAGE_URL}${image}`}
                             alt={`Our Tutors ${index + 1}`}
-                            className="w-full h-[280px] sm:h-[350px] md:h-[400px] lg:aspect-[4/5] lg:h-auto object-cover"
+                            className="w-full h-[280px] sm:h-[350px] md:h-[400px] lg:aspect-[4/5] lg:h-auto object-cover object-[50%_20%] lg:object-center"
                           />
                         </SwiperSlide>
                       ))}
