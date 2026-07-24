@@ -117,8 +117,8 @@ const Footer = () => {
             </p>
             <div className="flex text-xs items-center gap-2">
               <p>WAY Beirut</p>
-              <a className="hover:underline" href="tel:+961(3) 473 410">
-                +961(3) 473 410
+              <a className="hover:underline" href="tel:+961 76 717 406">
+                +961 76 717 406
               </a>
             </div>
             <a
