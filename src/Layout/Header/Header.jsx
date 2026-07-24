@@ -11,12 +11,24 @@ import AuthContext from "Context/AuthContext";
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isHomePage = location.pathname === "/";
   const { isLoggedIn, user } = useContext(AuthContext);
-  const showWhiteOnHome = isHomePage && !isScrolled && isLargeScreen;
+  // On the home hero (before scrolling) the header floats over the full-screen
+  // carousel — white logo/nav on a transparent bg — at every breakpoint. Once
+  // scrolled it flips to the solid white bar. Applies on mobile too now, not
+  // just desktop.
+  const showWhiteOnHome = isHomePage && !isScrolled;
+
+  // Home page: the header is fixed over the hero at all sizes so the carousel
+  // fills the screen. Other pages keep the original behavior — fixed only from
+  // lg up — so the in-flow mobile header keeps reserving space above content
+  // (those pages have small mobile top margins and would otherwise slide under
+  // a fixed header).
+  const positionClasses = isHomePage
+    ? "fixed top-0 left-0 right-0"
+    : "lg:fixed lg:top-0 lg:left-0 right-0";
 
   // Smooth scroll function
   const scrollToSection = (sectionId) => {
@@ -66,21 +78,16 @@ const Header = () => {
     };
   }, []);
 
-  // Close drawer on window resize (if screen becomes large)
+  // Close the mobile drawer if the screen grows past the mobile breakpoint.
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         // md breakpoint in Tailwind
         setIsDrawerOpen(false);
       }
-      // Track lg breakpoint for color/logo decisions
-      setIsLargeScreen(window.innerWidth >= 1024);
     };
 
     window.addEventListener("resize", handleResize);
-
-    // Initialize on mount
-    handleResize();
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -93,7 +100,7 @@ const Header = () => {
       {/* {isScrolled && <div style={{ height: isScrolled ? "0px" : "0px" }} />} */}
 
       <header
-        className={`transition-all duration-300 ease-in-out  h-max lg:fixed lg:top-0 lg:left-0 right-0 z-50 ${
+        className={`transition-all duration-300 ease-in-out h-max z-50 ${positionClasses} ${
           isScrolled
             ? "bg-white shadow-md"
             : isHomePage
