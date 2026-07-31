@@ -17,11 +17,11 @@ import heroSlide2 from "assets/images/landing/hero-2.webp";
 import heroSlide3 from "assets/images/landing/hero-3.webp";
 import heroSlide4 from "assets/images/landing/hero-4.webp";
 import wheelthrowingImage from "assets/images/home/wheelthrowing.webp";
-import sculptureImage from "assets/images/home/sculpture.webp";
+import readyMadeImage from "assets/images/home/ready-made.jpg";
 import handbuildingImage from "assets/images/home/handbuilding.png";
 import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.png";
 import workshopImage from "assets/images/home/workshop-image.webp";
-import studioImage from "assets/images/home/studio-picture.webp";
+import studioImage from "assets/images/home/studio-picture.jpg";
 import ourProductsImage from "assets/images/home/our-products.jpeg";
 import tutorImage from "assets/images/home/tutors-landscape.webp";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -365,28 +365,29 @@ const Home = () => {
                 </div>
               </SwiperSlide>
 
-              {/* Card 3: Sculpting (All levels) */}
+              {/* Card 3: Glaze on Ready Made */}
               <SwiperSlide>
                 <div className="flex flex-col">
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
                       <img
-                        src={sculptureImage}
-                        alt="Sculpting"
+                        src={readyMadeImage}
+                        alt="Glaze on Ready Made"
                         className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
-                    <span className="italic">Sculpting</span> (All levels)
+                    <span className="italic">Glaze on Ready Made</span>
                   </h3>
                   <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
                     <Clock size={18} weight="bold" />
-                    <span>3hrs</span>
+                    <span>2hrs</span>
                   </div>
                   <p className="text-gray-700 text-sm mb-4 flex-grow">
-                    Sculpting is shaping and carving clay or other materials to
-                    create expressive, three-dimensional art
+                    Choose from a selection of cups, plates, and more, and enjoy the freedom to paint 
+                    and personalize each piece your way. No experience needed, just come in, pick your piece, 
+                    and start creating.
                   </p>
                   <Button
                     to="/classes"
