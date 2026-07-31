@@ -18,11 +18,11 @@ import heroSlide3 from "assets/images/landing/hero-3.webp";
 import heroSlide4 from "assets/images/landing/hero-4.webp";
 import wheelthrowingImage from "assets/images/home/wheelthrowing.webp";
 import sculptureImage from "assets/images/home/sculpture.webp";
-import handbuildingImage from "assets/images/home/handbuilding.webp";
-import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.webp";
+import handbuildingImage from "assets/images/home/handbuilding.png";
+import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.png";
 import workshopImage from "assets/images/home/workshop-image.webp";
 import studioImage from "assets/images/home/studio-picture.webp";
-import coffeeBarImage from "assets/images/home/our-coffeebar.webp";
+import ourProductsImage from "assets/images/home/our-products.jpeg";
 import tutorImage from "assets/images/home/tutors-landscape.webp";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay, EffectFade } from "swiper/modules";
@@ -69,11 +69,7 @@ const Home = () => {
         >
           {HERO_SLIDES.map((slide, index) => (
             <SwiperSlide key={index}>
-              <img
-                src={slide}
-                alt=""
-                className="w-full h-full object-cover"
-              />
+              <img src={slide} alt="" className="w-full h-full object-cover" />
             </SwiperSlide>
           ))}
         </Swiper>
@@ -178,13 +174,17 @@ const Home = () => {
             {/* Large Workshop Image */}
             <div className="lg:col-span-2 rounded-2xl lg:rounded-[32px] overflow-hidden h-[300px] lg:h-[460px] bg-gray-200">
               <div className="w-full h-full flex items-center justify-center text-gray-500">
-                <img src={workshopImage} alt="Workshop" className="w-full h-full object-cover object-[50%_30%]" />
+                <img
+                  src={workshopImage}
+                  alt="Workshop"
+                  className="w-full h-full object-cover object-[50%_30%]"
+                />
               </div>
             </div>
 
             {/* Mobile only: CoffeeBar heading above its image (desktop shows it in the row below) */}
             <div className="lg:hidden text-center mt-2">
-              <h3 className="text-2xl italic mb-2">Our CoffeeBar</h3>
+              <h3 className="text-2xl italic mb-2">Our Products</h3>
               <p className="text-gray-700">
                 Located on Rue du Liban, Way offers a cozy and stylish space to
                 freely create
@@ -194,7 +194,11 @@ const Home = () => {
             {/* Bottom Left - Coffeeshop Interior */}
             <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-gray-200">
               <div className="w-full h-full flex items-center justify-center text-gray-500">
-                <img src={coffeeBarImage} alt="CoffeeBar" className="w-full h-full object-cover object-bottom" />
+                <img
+                  src={ourProductsImage}
+                  alt="Products"
+                  className="w-full h-full object-cover object-center"
+                />
               </div>
             </div>
 
@@ -210,18 +214,20 @@ const Home = () => {
             {/* Bottom Right - Tutor Card with Illustration */}
             <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-gray-200">
               <div className="w-full h-full flex items-center justify-center text-gray-500">
-                <img src={tutorImage} alt="Tutor" className="w-full h-full object-cover object-[50%_30%]" />
+                <img
+                  src={tutorImage}
+                  alt="Tutor"
+                  className="w-full h-full object-cover object-[60%_20%]"
+                />
               </div>
             </div>
           </div>
 
-          {/* Feature Cards - CoffeeBar and Tutors (desktop only; mobile shows the headings above each image) */}
+          {/* Feature Cards - Products and Tutors (desktop only; mobile shows the headings above each image) */}
           <div className="hidden lg:grid lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* CoffeeBar Card */}
+            {/* Products Card */}
             <div className="text-center lg:text-left">
-              <h3 className="text-2xl lg:text-3xl italic mb-4">
-                Our CoffeeBar
-              </h3>
+              <h3 className="text-2xl lg:text-3xl italic mb-4">Our Products</h3>
               <p className="text-gray-700 mb-4">
                 Located on Rue du Liban, Way offers a cozy and stylish space to
                 freely create
@@ -296,10 +302,10 @@ const Home = () => {
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
                       <img
-                      src={handbuildingImage}
-                      alt="Handbuilding"
-                      className="w-full h-full object-cover"
-                    />
+                        src={handbuildingImage}
+                        alt="Handbuilding"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
@@ -435,10 +441,10 @@ const Home = () => {
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
                       <img
-                      src={handbuildingMasteryImage}
-                      alt="Handbuilding (Mastery)"
-                      className="w-full h-full object-cover"
-                    />
+                        src={handbuildingMasteryImage}
+                        alt="Handbuilding (Mastery)"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
