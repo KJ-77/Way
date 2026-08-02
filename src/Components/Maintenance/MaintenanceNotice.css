@@ -1,0 +1,74 @@
+/* Full-viewport height with a real fallback.
+   These two declarations MUST stay in this order: older browsers ignore the
+   svh line and keep 100vh, modern ones take svh and so stay stable while mobile
+   browser chrome collapses. Doing this with Tailwind's `min-h-screen
+   min-h-[100svh]` does NOT work — Tailwind emits the svh rule *before* the vh
+   rule, so vh wins the cascade and the fallback silently overrides the value
+   you actually wanted. */
+.maintenance-screen {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+/* Entrance animation for the maintenance copy. Hand-rolled rather than pulled
+   from framer-motion so this branch ships the smallest possible bundle — the
+   whole point of a maintenance page is that it loads instantly. */
+@keyframes maintenance-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.maintenance-rise {
+  opacity: 0;
+  animation: maintenance-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Stagger delays — each block enters just after the one above it. */
+.maintenance-rise-1 {
+  animation-delay: 0.05s;
+}
+.maintenance-rise-2 {
+  animation-delay: 0.2s;
+}
+.maintenance-rise-3 {
+  animation-delay: 0.35s;
+}
+.maintenance-rise-4 {
+  animation-delay: 0.5s;
+}
+
+/* A slow "breathing" glow behind the wordmark — kiln-warm, barely perceptible. */
+@keyframes maintenance-ember {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.08);
+  }
+}
+
+.maintenance-ember {
+  animation: maintenance-ember 7s ease-in-out infinite;
+}
+
+/* Respect users who've asked the OS to cut motion: show everything immediately,
+   statically, instead of animating it in. */
+@media (prefers-reduced-motion: reduce) {
+  .maintenance-rise {
+    opacity: 1;
+    animation: none;
+  }
+
+  .maintenance-ember {
+    animation: none;
+  }
+}

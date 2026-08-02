@@ -1,85 +1,10 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import Home from "Pages/Home/Home";
+import Maintenance from "Pages/Maintenance/Maintenance";
 
-// context
-import { AuthProvider } from "Context/AuthContext";
-
-// Auth Pages
-import Login from "Pages/auth/login";
-import Register from "Pages/auth/register";
-import Account from "Pages/auth/Account/Account";
-import Verify from "Pages/auth/verify";
-import EditProfile from "Pages/auth/edit-profile";
-import ChangePassword from "Pages/auth/change-password";
-import SendVerificationCode from "Pages/auth/send-verification-code";
-import VerifyResetCode from "Pages/auth/verify-reset-code";
-import ResetPassword from "Pages/auth/reset-password";
-import Classes from "Pages/Classes/Classes";
-import WeeklySchedule from "Pages/WeeklySchedule/WeeklySchedule";
-import Event from "Pages/Events/Event";
-import Shop from "./Pages/Shop/Shop";
-import ProtectedRoute from "Components/auth/ProtectedRoute";
-
-import Header from "Layout/Header/Header";
-import Footer from "Layout/Footer/Footer";
-import useScrollToTop from "Hooks/useScrollToTop";
-
-const App = () => {
-  useScrollToTop();
-  return (
-    <AuthProvider>
-      <div className="App">
-        <Header />
-        <Routes>
-          <Route index element={<Home />} />
-          {/* /classes and /schedule are gated per the studio's request —
-              anonymous browsing is disabled. Session-restore + redirect logic
-              lives in <ProtectedRoute>. */}
-          <Route
-            path="/classes"
-            element={
-              <ProtectedRoute>
-                <Classes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/schedule"
-            element={
-              <ProtectedRoute>
-                <WeeklySchedule />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/events" element={<Event />} />
-
-          {/* Auth Routes */}
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/register" element={<Register />} />
-          <Route
-            path="/auth/account"
-            element={
-              <ProtectedRoute>
-                <Account />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/auth/profile" element={<Navigate to="/auth/account" replace />} />
-          <Route path="/auth/edit-profile" element={<EditProfile />} />
-          <Route path="/auth/change-password" element={<ChangePassword />} />
-          <Route path="/auth/verify" element={<Verify />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route
-            path="/auth/send-verification-code"
-            element={<SendVerificationCode />}
-          />
-          <Route path="/auth/password/verify" element={<VerifyResetCode />} />
-          <Route path="/auth/password/reset" element={<ResetPassword />} />
-        </Routes>
-        <Footer />
-      </div>
-    </AuthProvider>
-  );
-};
+// The `maintenance` branch deliberately ships a single, route-less page: every
+// path a visitor lands on serves the same maintenance notice (Vercel already
+// rewrites all non-file requests to index.html). The router, Header, Footer and
+// AuthProvider are intentionally out of the tree here — the real app shell lives
+// on `main`, so switching back is a branch swap, not a rewrite.
+const App = () => <Maintenance />;
 
 export default App;

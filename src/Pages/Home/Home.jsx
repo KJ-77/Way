@@ -365,20 +365,20 @@ const Home = () => {
                 </div>
               </SwiperSlide>
 
-              {/* Card 3: Glaze on Ready Made */}
+              {/* Card 3: Painting on Ceramics */}
               <SwiperSlide>
                 <div className="flex flex-col">
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
                       <img
                         src={readyMadeImage}
-                        alt="Glaze on Ready Made"
+                        alt="Painting on Ceramics"
                         className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
-                    <span className="italic">Glaze on Ready Made</span>
+                    <span className="italic">Painting on Ceramics</span>
                   </h3>
                   <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
                     <Clock size={18} weight="bold" />
