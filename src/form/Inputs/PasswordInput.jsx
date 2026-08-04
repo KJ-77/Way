@@ -16,6 +16,10 @@ const PasswordInput = (props) => {
     onFocus = () => {},
     hasError = false,
     errorMessage = "error",
+    // Persistent requirement note rendered *below* the field (in the same red
+    // as the error) rather than as in-field placeholder text. When the field is
+    // in an error state the error wins, so there's only ever one line of red.
+    hint,
   } = props;
 
   const handlePassword = () => {
@@ -54,9 +58,11 @@ const PasswordInput = (props) => {
           )}
         </span>
       </div>
-      <p className={`text-sm text-red-500 ${hasError ? "block " : "hidden"}`}>
-        {errorMessage}
-      </p>
+      {hasError ? (
+        <p className="text-sm text-red-500">{errorMessage}</p>
+      ) : (
+        hint && <p className="text-sm text-red-500">{hint}</p>
+      )}
     </div>
   );
 };

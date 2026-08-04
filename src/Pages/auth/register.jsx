@@ -204,11 +204,13 @@ const Register = () => {
                 errorMessage={fieldErrors.email || "Please enter a valid email."}
               />
 
+              {/* The password rules live under the field as a red hint rather
+                  than as in-field placeholder text — the requirements stay
+                  readable while the user is actually typing a password. */}
               <PasswordInput
                 label="Password"
                 name="password"
                 id="register-password"
-                placeholder="At least 8 characters, with a number and uppercase letter"
                 value={password.value}
                 onChange={password.inputChangeHandler}
                 onBlur={password.inputBlurHandler}
@@ -217,6 +219,7 @@ const Register = () => {
                   fieldErrors.password ||
                   "Min 8 chars with at least one uppercase, lowercase, and number."
                 }
+                hint="Min 8 chars with at least one uppercase, lowercase, and number."
               />
               <PasswordInput
                 label="Confirm Password"

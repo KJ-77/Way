@@ -1,4 +1,5 @@
 import { Calendar, Sparkle } from "@phosphor-icons/react";
+import { formatPrice } from "Helpers/formatPrice";
 
 // Two brown variants alternate by id to give the catalog visual rhythm — same
 // palette as the weekly schedule page so the two pages feel cohesive.
@@ -42,8 +43,9 @@ const PackageCard = ({ pkg, variantIndex = 0 }) => {
     });
   }
 
-  const priceLabel =
-    pkg.price != null && Number(pkg.price) > 0 ? `$${Number(pkg.price).toLocaleString()}` : "—";
+  // No currency symbol here — the page-level "All prices are in USD" note
+  // (<PriceNote />) carries that, so the cards stay clean.
+  const priceLabel = formatPrice(pkg.price);
 
   return (
     <article

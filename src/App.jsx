@@ -15,9 +15,10 @@ import SendVerificationCode from "Pages/auth/send-verification-code";
 import VerifyResetCode from "Pages/auth/verify-reset-code";
 import ResetPassword from "Pages/auth/reset-password";
 import Classes from "Pages/Classes/Classes";
+import ClassPackages from "Pages/Classes/ClassPackages";
 import WeeklySchedule from "Pages/WeeklySchedule/WeeklySchedule";
 import Event from "Pages/Events/Event";
-import Shop from "./Pages/Shop/Shop";
+import Shop from "Pages/Shop/Shop";
 import ProtectedRoute from "Components/auth/ProtectedRoute";
 
 import Header from "Layout/Header/Header";
@@ -43,6 +44,15 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+          {/* Drill-down: the packages that belong to one class type. */}
+          <Route
+            path="/classes/:classTypeId"
+            element={
+              <ProtectedRoute>
+                <ClassPackages />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/schedule"
             element={
@@ -52,6 +62,8 @@ const App = () => {
             }
           />
           <Route path="/events" element={<Event />} />
+          {/* Placeholder page — the real shop catalog isn't built yet. */}
+          <Route path="/shop" element={<Shop />} />
 
           {/* Auth Routes */}
           <Route path="/auth/login" element={<Login />} />
@@ -68,7 +80,6 @@ const App = () => {
           <Route path="/auth/edit-profile" element={<EditProfile />} />
           <Route path="/auth/change-password" element={<ChangePassword />} />
           <Route path="/auth/verify" element={<Verify />} />
-          <Route path="/shop" element={<Shop />} />
           <Route
             path="/auth/send-verification-code"
             element={<SendVerificationCode />}

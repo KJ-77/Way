@@ -8,33 +8,42 @@ import TabEmptyState from "./TabEmptyState";
 // source_pool === "client". No user_id param needed.
 // See: Way-Backend src/functions/items/handler.ts → getItems()
 
-// Stage palette — tells the progression story at a glance.
-// drying (still wet) → bisque (first firing) → waiting glaze → glaze fired → ready
-// discarded is a terminal grey state.
+// Stage palette. Labels are copied verbatim from the admin site's `items.stage_*`
+// i18n keys (Way-Admin/src/i18n/locales/en.json) so a client and a studio manager
+// looking at the same piece read the same words — "Ready for Pickup", not "Ready".
+// Hues match the admin's stageBadgeVariant map; only the treatment differs
+// (light fills here vs. the admin's dark-theme translucent fills).
+//
+// "picked up" was previously missing, which meant collected pieces silently fell
+// through to the "Drying" fallback.
 const STAGE_STYLES = {
   drying: {
     label: "Drying",
-    classes: "bg-amber-50 text-amber-800 ring-amber-200",
+    classes: "bg-yellow-50 text-yellow-800 ring-yellow-200",
   },
   "bisque fired": {
-    label: "Bisque Fired",
+    label: "Bisque Firing",
     classes: "bg-orange-50 text-orange-800 ring-orange-200",
   },
   "waiting glaze": {
-    label: "Waiting Glaze",
-    classes: "bg-sky-50 text-sky-800 ring-sky-200",
+    label: "In Progress",
+    classes: "bg-blue-50 text-blue-800 ring-blue-200",
   },
   "glaze fired": {
-    label: "Glaze Fired",
+    label: "Glaze Firing",
     classes: "bg-purple-50 text-purple-800 ring-purple-200",
   },
   ready: {
-    label: "Ready",
+    label: "Ready for Pickup",
     classes: "bg-green-50 text-green-800 ring-green-200",
+  },
+  "picked up": {
+    label: "Picked Up",
+    classes: "bg-emerald-50 text-emerald-800 ring-emerald-200",
   },
   discarded: {
     label: "Discarded",
-    classes: "bg-gray-100 text-gray-600 ring-gray-200",
+    classes: "bg-red-50 text-red-700 ring-red-200",
   },
 };
 
@@ -42,7 +51,7 @@ const StageBadge = ({ stage }) => {
   const style = STAGE_STYLES[stage] ?? STAGE_STYLES.drying;
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ring-1 ring-inset ${style.classes}`}
+      className={`inline-flex items-center whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-medium ring-1 ring-inset ${style.classes}`}
     >
       {style.label}
     </span>

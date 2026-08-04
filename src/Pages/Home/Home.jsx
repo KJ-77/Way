@@ -1,8 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import useFetch from "Hooks/useFetch";
 import { DotsLoader } from "Components/RequestHandler";
 import Container from "Components/Container/Container";
 import Button from "Components/form/Button";
+import AuthContext from "Context/AuthContext";
+import { buildWhatsAppUrl } from "Utilities/contact";
+import { WAY_INSTAGRAM_URL } from "Utilities/socials";
 import {
   ArrowRight,
   WhatsappLogo,
@@ -12,7 +15,6 @@ import {
   CaretRight,
 } from "@phosphor-icons/react";
 import AboutUs from "./AboutUs";
-import heroSlide1 from "assets/images/landing/hero-1.webp";
 import heroSlide2 from "assets/images/landing/hero-2.webp";
 import heroSlide3 from "assets/images/landing/hero-3.webp";
 import heroSlide4 from "assets/images/landing/hero-4.webp";
@@ -23,7 +25,7 @@ import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.pn
 import workshopImage from "assets/images/home/workshop-image.webp";
 import studioImage from "assets/images/home/studio-picture.jpg";
 import ourProductsImage from "assets/images/home/our-products.jpeg";
-import tutorImage from "assets/images/home/tutors-landscape.webp";
+import tutorIllustration from "assets/images/home/illustration.webp";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay, EffectFade } from "swiper/modules";
 import "swiper/css";
@@ -33,12 +35,19 @@ import "swiper/css/effect-fade";
 
 // Hero background slideshow images (auto-rotating carousel that replaces the
 // single static hero image).
-const HERO_SLIDES = [heroSlide1, heroSlide2, heroSlide3, heroSlide4];
+const HERO_SLIDES = [heroSlide2, heroSlide3, heroSlide4];
 
 const Home = () => {
   const { data, isLoading, fetchData } = useFetch();
+  const { isLoggedIn } = useContext(AuthContext);
   const classesPrevRef = useRef(null);
   const classesNextRef = useRef(null);
+
+  // Single hero CTA, chosen by auth state: members go straight to booking,
+  // everyone else is pushed to sign up. Never both at once.
+  const heroCta = isLoggedIn
+    ? { label: "Book now", to: "/schedule" }
+    : { label: "Become a member", to: "/auth/register" };
 
   useEffect(() => {
     fetchData("/home");
@@ -76,16 +85,18 @@ const Home = () => {
 
         <div className="absolute right-10 bottom-20 z-[10000] text-white hidden lg:flex items-center gap-x-3">
           <a
-            href="https://wa.me/919826000000"
+            href={buildWhatsAppUrl()}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="WhatsApp"
           >
             <WhatsappLogo size={24} />
           </a>
           <a
-            href="https://www.instagram.com/your_instagram_handle"
+            href={WAY_INSTAGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Instagram"
           >
             <InstagramLogo size={24} />
           </a>
@@ -125,23 +136,15 @@ const Home = () => {
                 </p>
               ) : null}
             </div>
-            <div className="mt-4 sm:mt-14 flex flex-col sm:flex-row items-center justify-center gap-y-3 sm:gap-y-0 gap-x-4 sm:gap-x-6 px-4 sm:px-0 lg:w-1/2">
+            <div className="mt-4 sm:mt-14 flex items-center justify-center px-4 sm:px-0 lg:w-1/2">
               <Button
-                to="/auth/register"
+                to={heroCta.to}
                 variant="outline-white"
                 size="sm"
                 className="w-full sm:w-auto"
               >
-                Become a member
+                {heroCta.label}
                 <ArrowRight size={16} />
-              </Button>
-              <Button
-                to="/classes"
-                variant="outline-white"
-                size="sm"
-                className="w-full sm:w-auto bg-white/90 !text-black hover:bg-white/10 hover:!text-white border-white"
-              >
-                Book now
               </Button>
             </div>
           </Container>
@@ -157,90 +160,47 @@ const Home = () => {
               An atelier that feels like{" "}
               <span className="text-secondary italic">Home</span>
             </h2>
-            <p className="text-gray-700 max-w-2xl mx-auto mb-8 px-4">
+            <p className="text-gray-700 max-w-2xl mx-auto px-4">
               Here, every creation is an expression of your freedom shaping,
               molding, and exploring without limits.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button to="/classes" variant="outline" size="md">
-                Book now
-                <ArrowRight size={16} />
-              </Button>
-            </div>
           </div>
 
-          {/* Visual Grid - 3 Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-12 lg:mb-16">
+          {/* Visual Grid — images only. The "Our Products" / "Our Tutors"
+              headings and blurbs that used to sit above each tile (mobile) and
+              in a row underneath (desktop) were removed; the bento is now purely
+              photographic at every breakpoint. */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
             {/* Large Workshop Image */}
             <div className="lg:col-span-2 rounded-2xl lg:rounded-[32px] overflow-hidden h-[300px] lg:h-[460px] bg-gray-200">
-              <div className="w-full h-full flex items-center justify-center text-gray-500">
-                <img
-                  src={workshopImage}
-                  alt="Workshop"
-                  className="w-full h-full object-cover object-[50%_30%]"
-                />
-              </div>
+              <img
+                src={workshopImage}
+                alt="Workshop"
+                className="w-full h-full object-cover object-[50%_30%]"
+              />
             </div>
 
-            {/* Mobile only: CoffeeBar heading above its image (desktop shows it in the row below) */}
-            <div className="lg:hidden text-center mt-2">
-              <h3 className="text-2xl italic mb-2">Our Products</h3>
-              <p className="text-gray-700">
-                Located on Rue du Liban, Way offers a cozy and stylish space to
-                freely create
-              </p>
-            </div>
-
-            {/* Bottom Left - Coffeeshop Interior */}
+            {/* Bottom Left - Products */}
             <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-gray-200">
-              <div className="w-full h-full flex items-center justify-center text-gray-500">
-                <img
-                  src={ourProductsImage}
-                  alt="Products"
-                  className="w-full h-full object-cover object-center"
-                />
-              </div>
+              <img
+                src={ourProductsImage}
+                alt="Products"
+                className="w-full h-full object-cover object-center"
+              />
             </div>
 
-            {/* Mobile only: Tutors heading above its image */}
-            <div className="lg:hidden text-center mt-2">
-              <h3 className="text-2xl italic mb-2">Our Tutors</h3>
-              <p className="text-gray-700">
-                Get to know the skilled tutors at Way, here to help you grow and
-                refine your craft.
-              </p>
-            </div>
-
-            {/* Bottom Right - Tutor Card with Illustration */}
-            <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-gray-200">
-              <div className="w-full h-full flex items-center justify-center text-gray-500">
-                <img
-                  src={tutorImage}
-                  alt="Tutor"
-                  className="w-full h-full object-cover object-[60%_20%]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Feature Cards - Products and Tutors (desktop only; mobile shows the headings above each image) */}
-          <div className="hidden lg:grid lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* Products Card */}
-            <div className="text-center lg:text-left">
-              <h3 className="text-2xl lg:text-3xl italic mb-4">Our Products</h3>
-              <p className="text-gray-700 mb-4">
-                Located on Rue du Liban, Way offers a cozy and stylish space to
-                freely create
-              </p>
-            </div>
-
-            {/* Tutors Card */}
-            <div className="text-center lg:text-left">
-              <h3 className="text-2xl lg:text-3xl italic mb-4">Our Tutors</h3>
-              <p className="text-gray-700 mb-4">
-                Get to know the skilled tutors at Way, here to help you grow and
-                refine your craft.
-              </p>
+            {/* Bottom Right - Tutors illustration.
+                This one is a square 1080×1080 drawing, not a landscape photo, so
+                object-cover would crop the head and table off. object-contain
+                keeps the whole artwork and the tile takes the illustration's own
+                background colour (#c7b2a1), so the letterboxing is invisible and
+                it reads as one continuous panel. */}
+            <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-[#c7b2a1]">
+              <img
+                src={tutorIllustration}
+                alt="Illustration of a potter painting a mug"
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
         </Container>
@@ -254,13 +214,9 @@ const Home = () => {
             <h2 className="text-3xl lg:text-5xl mb-4">
               Our <span className="italic">Classes</span>
             </h2>
-            <p className="text-gray-700 text-lg mb-6">
+            <p className="text-gray-700 text-lg">
               Discover our classes and join a session that inspires you
             </p>
-            <Button to="/classes" variant="link" size="sm">
-              Book now
-              <ArrowRight size={14} />
-            </Button>
           </div>
 
           {/* Classes Carousel */}
@@ -319,15 +275,6 @@ const Home = () => {
                     A pottery technique where clay is molded by hand into unique
                     shapes and textures.
                   </p>
-                  <Button
-                    to="/classes"
-                    variant="link"
-                    size="sm"
-                    className="self-start"
-                  >
-                    Book now
-                    <ArrowRight size={12} />
-                  </Button>
                 </div>
               </SwiperSlide>
 
@@ -353,51 +300,33 @@ const Home = () => {
                     Wheel throwing is shaping clay on a spinning wheel to create
                     smooth, symmetrical forms.
                   </p>
-                  <Button
-                    to="/classes"
-                    variant="link"
-                    size="sm"
-                    className="self-start"
-                  >
-                    Book now
-                    <ArrowRight size={12} />
-                  </Button>
                 </div>
               </SwiperSlide>
 
-              {/* Card 3: Glaze on Ready Made */}
+              {/* Card 3: Painting on Ceramics */}
               <SwiperSlide>
                 <div className="flex flex-col">
                   <div className="rounded-3xl overflow-hidden mb-4 h-[280px] sm:h-[320px] lg:aspect-[4/5] lg:h-auto bg-gray-200">
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
                       <img
                         src={readyMadeImage}
-                        alt="Glaze on Ready Made"
+                        alt="Painting on Ceramics"
                         className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
                   <h3 className="text-xl mb-2">
-                    <span className="italic">Glaze on Ready Made</span>
+                    <span className="italic">Painting on Ceramics</span>
                   </h3>
                   <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">
                     <Clock size={18} weight="bold" />
-                    <span>2hrs</span>
+                    <span>No Booking Required!</span>
                   </div>
                   <p className="text-gray-700 text-sm mb-4 flex-grow">
                     Choose from a selection of cups, plates, and more, and enjoy the freedom to paint 
                     and personalize each piece your way. No experience needed, just come in, pick your piece, 
                     and start creating.
                   </p>
-                  <Button
-                    to="/classes"
-                    variant="link"
-                    size="sm"
-                    className="self-start"
-                  >
-                    Book now
-                    <ArrowRight size={12} />
-                  </Button>
                 </div>
               </SwiperSlide>
 
@@ -424,15 +353,6 @@ const Home = () => {
                     Open Studio is a free-creation where you use our space,
                     tools, and materials to work at your own pace.
                   </p>
-                  <Button
-                    to="/classes"
-                    variant="link"
-                    size="sm"
-                    className="self-start"
-                  >
-                    Book now
-                    <ArrowRight size={12} />
-                  </Button>
                 </div>
               </SwiperSlide>
 
@@ -460,15 +380,6 @@ const Home = () => {
                     complex forms, refined techniques, and more creative freedom
                     in shaping clay.
                   </p>
-                  <Button
-                    to="/classes"
-                    variant="link"
-                    size="sm"
-                    className="self-start"
-                  >
-                    Book now
-                    <ArrowRight size={12} />
-                  </Button>
                 </div>
               </SwiperSlide>
             </Swiper>
@@ -490,10 +401,12 @@ const Home = () => {
             </button>
           </div>
 
-          {/* View More Button */}
+          {/* Sole CTA for this section — the per-card "Book now" links were
+              removed, so this is the one route into the catalog. */}
           <div className="text-center">
             <Button to="/classes" variant="outline" size="md">
-              View more
+              Book now
+              <ArrowRight size={16} />
             </Button>
           </div>
         </Container>

@@ -174,7 +174,7 @@ const Login = () => {
           <p className="mt-2 text-sm text-gray-600">
             Or{" "}
             <Link to="/auth/register" className="font-medium text-black hover:text-gray-800 underline">
-              create a new account
+              Sign Up
             </Link>
           </p>
         </div>

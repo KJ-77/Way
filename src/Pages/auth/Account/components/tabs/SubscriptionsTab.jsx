@@ -75,8 +75,10 @@ const SubscriptionsTab = () => {
         Your Subscriptions
       </h2>
       <div className="space-y-4">
+        {/* highlight → big sessions/weight tiles; this tab is where those two
+            numbers matter most. */}
         {state.data.map((sub) => (
-          <SubscriptionCard key={sub.id} sub={sub} />
+          <SubscriptionCard key={sub.id} sub={sub} highlight />
         ))}
       </div>
     </section>

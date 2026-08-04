@@ -1,4 +1,4 @@
-import { CheckCircle, XCircle, Warning, ArrowRight } from "@phosphor-icons/react";
+import { CheckCircle, XCircle, Warning, ArrowRight, Calendar, Scales } from "@phosphor-icons/react";
 
 // Card that shows one subscription — used both on the Account → Subscriptions
 // tab and inside the booking modal. Passing `preview` renders a "before → after"
@@ -8,6 +8,11 @@ import { CheckCircle, XCircle, Warning, ArrowRight } from "@phosphor-icons/react
 //
 // currently only sessionsDelta is supported — extend the shape if we ever
 // preview weight or expiry changes too.
+//
+// `highlight` switches the two balance figures (sessions left, weight remaining)
+// from small label/value pairs to large metric tiles with consumption bars. The
+// account page turns it on — those numbers are the reason people open that tab.
+// The booking modal leaves it off so the card stays compact inside the dialog.
 
 // Backend `status` comes from computeStatus() in user-packages/handler.ts.
 const STATUS_STYLES = {
@@ -53,6 +58,59 @@ const Stat = ({ label, value, delta }) => (
   </div>
 );
 
+// Big balance tile: remaining figure at display size, the total as context, and
+// a bar showing how much of the package is left. Turns amber once a quarter or
+// less remains so a nearly-spent package is obvious at a glance.
+const BalanceTile = ({ icon: Icon, label, remaining, total, unit, delta }) => {
+  const remainingNum = Number(remaining) || 0;
+  const totalNum = Number(total) || 0;
+  // Guard the divide — a package with no total would otherwise produce NaN.
+  const pct = totalNum > 0 ? Math.min(100, Math.max(0, (remainingNum / totalNum) * 100)) : 0;
+  const isLow = pct <= 25;
+
+  return (
+    <div
+      className={`rounded-xl border p-4 ${
+        isLow ? "border-amber-200 bg-amber-50/60" : "border-[#5a4434]/15 bg-[#5a4434]/[0.04]"
+      }`}
+    >
+      <p className="flex items-center gap-x-1.5 text-xs uppercase tracking-wider text-[#7a5d4d] mb-2">
+        <Icon size={14} weight="bold" />
+        {label}
+      </p>
+
+      <p className="flex items-baseline gap-x-1.5">
+        <span
+          className={`text-3xl sm:text-4xl font-semibold tabular-nums leading-none ${
+            isLow ? "text-amber-700" : "text-[#5a4434]"
+          }`}
+        >
+          {remaining}
+        </span>
+        {unit && (
+          <span className="text-sm font-medium text-[#7a5d4d]">{unit}</span>
+        )}
+        {/* `total` must stay numeric — the bar percentage divides by it. The
+            unit is appended here for display only. */}
+        <span className="text-sm text-gray-500">
+          of {total}
+          {unit ? ` ${unit}` : ""}
+        </span>
+        {delta}
+      </p>
+
+      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[#5a4434]/10">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${
+            isLow ? "bg-amber-500" : "bg-[#a6826e]"
+          }`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+};
+
 const formatDate = (iso) =>
   iso
     ? new Date(iso).toLocaleDateString("en-US", {
@@ -62,9 +120,10 @@ const formatDate = (iso) =>
       })
     : "—";
 
-const SubscriptionCard = ({ sub, preview }) => {
+const SubscriptionCard = ({ sub, preview, highlight = false }) => {
   const sessionsDelta = preview?.sessionsDelta ?? 0;
   const nextSessions = Number(sub.remaining_sessions) + sessionsDelta;
+  const hasWeight = Number(sub.weight_included) > 0;
 
   // Only show the arrow-preview when the delta is non-zero AND the resulting
   // number is non-negative (defensive — the backend enforces this too).
@@ -90,24 +149,56 @@ const SubscriptionCard = ({ sub, preview }) => {
         <StatusBadge status={sub.status} />
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
-        <Stat
-          label="Sessions Left"
-          value={
-            <span className="tabular-nums">
-              {sub.remaining_sessions} of {sub.sessions_included}
+      {highlight ? (
+        <>
+          <div
+            className={`grid gap-3 ${hasWeight ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
+          >
+            <BalanceTile
+              icon={Calendar}
+              label="Sessions Left"
+              remaining={sub.remaining_sessions}
+              total={sub.sessions_included}
+              delta={sessionsDeltaNode}
+            />
+            {hasWeight && (
+              <BalanceTile
+                icon={Scales}
+                label="Weight Remaining"
+                remaining={sub.remaining_weight}
+                total={sub.weight_included}
+                unit="kg"
+              />
+            )}
+          </div>
+
+          <p className="mt-4 text-xs text-gray-500">
+            Expires{" "}
+            <span className="font-medium text-gray-700">
+              {formatDate(sub.expiry_date)}
             </span>
-          }
-          delta={sessionsDeltaNode}
-        />
-        {sub.weight_included > 0 && (
+          </p>
+        </>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-3">
           <Stat
-            label="Weight Remaining"
-            value={`${sub.remaining_weight} kg of ${sub.weight_included}`}
+            label="Sessions Left"
+            value={
+              <span className="tabular-nums">
+                {sub.remaining_sessions} of {sub.sessions_included}
+              </span>
+            }
+            delta={sessionsDeltaNode}
           />
-        )}
-        <Stat label="Expires" value={formatDate(sub.expiry_date)} />
-      </div>
+          {hasWeight && (
+            <Stat
+              label="Weight Remaining"
+              value={`${sub.remaining_weight} kg of ${sub.weight_included}`}
+            />
+          )}
+          <Stat label="Expires" value={formatDate(sub.expiry_date)} />
+        </div>
+      )}
     </div>
   );
 };

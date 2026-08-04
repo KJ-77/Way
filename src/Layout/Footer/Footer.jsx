@@ -1,7 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import Container from "Components/Container/Container";
+import { WhatsappLogo, InstagramLogo } from "@phosphor-icons/react";
 import BASE_URL, { MOCK_MODE } from "Utilities/BASE_URL";
+import { buildWhatsAppUrl, WAY_WHATSAPP_DISPLAY } from "Utilities/contact";
+import { WAY_INSTAGRAM_URL } from "Utilities/socials";
+
+// Google Maps short link to the studio's actual pin.
+const WAY_MAPS_URL = "https://maps.app.goo.gl/UVAai3yZXm8498gj8";
+
+// Compact pill used for the two social channels. Icon + label so it reads as a
+// button rather than a bare glyph.
+const SocialButton = ({ href, icon: Icon, label }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="inline-flex items-center gap-x-2 rounded-full border border-primary/25 px-4 py-2 text-sm font-medium text-primary transition-colors duration-300 hover:bg-primary hover:text-white"
+  >
+    <Icon size={18} weight="fill" />
+    {label}
+  </a>
+);
+
+const FIELD_CLASSES =
+  "w-full rounded-md border border-primary/30 bg-transparent px-3 py-2 text-sm text-primary placeholder:text-primary/40 transition-colors focus:border-primary focus:outline-none disabled:opacity-60";
 
 const Footer = () => {
   const [formData, setFormData] = useState({
@@ -104,149 +126,152 @@ const Footer = () => {
   };
 
   return (
-    <footer className=" py-14">
+    <footer className="border-t border-primary/10 py-10 text-primary">
       <Container className="Container">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-20">
-          {/* 0 */}
-          <div className="flex flex-col items-start lg:col-span-2">
-            <h2 className="title font-bold text-4xl  text-primary lg:mb-4 mb-2 tracking-widest">
+        {/* Two columns from md up: identity + contact on the left, the
+            newsletter form on the right. Everything stacks on mobile. */}
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-12">
+          {/* Identity, contact channels, socials */}
+          <div>
+            <h2 className="title text-3xl font-bold tracking-widest text-primary">
               W A Y
             </h2>
-            <p className="text-xs my-6">
-              To get more information please contact us at:
-            </p>
-            <div className="flex text-xs items-center gap-2">
-              <p>WAY Beirut</p>
-              <a className="hover:underline" href="tel:+961 76 717 406">
-                +961 76 717 406
-              </a>
+
+            <div className="mt-4 space-y-1 text-sm">
+              <p className="font-medium">WAY Beirut</p>
+              <p>
+                <a className="hover:underline" href={`tel:${WAY_WHATSAPP_DISPLAY.replace(/\s/g, "")}`}>
+                  {WAY_WHATSAPP_DISPLAY}
+                </a>
+              </p>
+              <p>
+                <a className="hover:underline" href="mailto:way@beirut.com">
+                  way@beirut.com
+                </a>
+              </p>
+              <p>
+                <a
+                  className="hover:underline"
+                  href="mailto:contactwaybeirut@gmail.com"
+                >
+                  contactwaybeirut@gmail.com
+                </a>
+              </p>
+              <p>
+                <a
+                  className="hover:underline"
+                  href={WAY_MAPS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Rue du Liban, Beirut
+                </a>
+              </p>
             </div>
-            <a
-              className="text-xs my-2 hover:underline"
-              href="mailto:way@beirut.com"
-            >
-              way@beirut.com
-            </a>
-            <div className="flex text-xs items-center gap-2">
-              <p>Email:</p>
-              <a
-                className="hover:underline"
-                href="mailto:contactwaybeirut@gmail.com"
-              >
-                contactwaybeirut@gmail.com
-              </a>
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <SocialButton
+                href={buildWhatsAppUrl()}
+                icon={WhatsappLogo}
+                label="WhatsApp"
+              />
+              <SocialButton
+                href={WAY_INSTAGRAM_URL}
+                icon={InstagramLogo}
+                label="Instagram"
+              />
             </div>
           </div>
-          {/* 1 */}
-          <div>
-            <p className="text-xl mb-6 ">Subscribe to newsletter</p>
 
-            <form onSubmit={handleSubmit} className="flex flex-col  gap-3">
-              <div className="text-xs flex">
-                <label className="flex-1" htmlFor="firstName">
-                  First Name
-                </label>
-                <div className="flex-[2]">
+          {/* Newsletter / contact form */}
+          <div>
+            <p className="text-lg font-medium">Subscribe to newsletter</p>
+
+            <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                  <label
+                    className="mb-1 block text-sm"
+                    htmlFor="footer-firstName"
+                  >
+                    First Name
+                  </label>
                   <input
-                    className="placeholder:text-xs w-3/4  border border-black p-1.5 focus:outline-none focus:border-gray-600 transition-colors"
+                    className={FIELD_CLASSES}
                     type="text"
-                    id="firstName"
+                    id="footer-firstName"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    placeholder="Your name here"
+                    placeholder="Your name"
                     disabled={isSubmitting}
                   />
                 </div>
-              </div>
-              <div className="text-xs flex">
-                <label className="flex-1" htmlFor="email">
-                  Email
-                </label>
-                <div className="flex-[2]">
+                <div>
+                  <label className="mb-1 block text-sm" htmlFor="footer-email">
+                    Email
+                  </label>
                   <input
-                    className="placeholder:text-xs w-3/4  border border-black p-1.5 focus:outline-none focus:border-gray-600 transition-colors"
+                    className={FIELD_CLASSES}
                     type="email"
-                    id="email"
+                    id="footer-email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="Your email here"
+                    placeholder="you@example.com"
                     disabled={isSubmitting}
                   />
                 </div>
               </div>
-              <div className="text-xs flex">
-                <label className="flex-1" htmlFor="message">
+
+              <div>
+                <label className="mb-1 block text-sm" htmlFor="footer-message">
                   Message
                 </label>
-                <div className="flex-[2]">
-                  <textarea
-                    className="placeholder:text-xs w-3/4 border border-black min-h-[50px] p-1.5 focus:outline-none focus:border-gray-600 transition-colors resize-vertical"
-                    name="message"
-                    id="message"
-                    rows={2}
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    placeholder="Your message here"
-                    disabled={isSubmitting}
-                  />
-                </div>
+                <textarea
+                  className={`${FIELD_CLASSES} min-h-[70px] resize-y`}
+                  name="message"
+                  id="footer-message"
+                  rows={2}
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  placeholder="Your message here"
+                  disabled={isSubmitting}
+                />
               </div>
 
               {/* Status message */}
               {submitMessage && (
-                <div className="text-xs flex">
-                  <div className="flex-1"></div>
-                  <div className="flex-[2]">
-                    <div
-                      className={`p-2 rounded border text-center ${
-                        submitStatus === "success"
-                          ? "bg-green-50 border-green-200 text-green-700"
-                          : "bg-red-50 border-red-200 text-red-700"
-                      }`}
-                    >
-                      {submitMessage}
-                    </div>
-                  </div>
+                <div
+                  className={`rounded-md border p-2 text-center text-sm ${
+                    submitStatus === "success"
+                      ? "border-green-200 bg-green-50 text-green-700"
+                      : "border-red-200 bg-red-50 text-red-700"
+                  }`}
+                >
+                  {submitMessage}
                 </div>
               )}
 
-              <div className="text-xs flex">
-                <label className="flex-1 opacity-0" htmlFor="submit">
-                  Submit
-                </label>
-                <div className="flex-[2]">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`border border-black px-2 py-1 w-1/2 mr-auto transition-all duration-300 ${
-                      isSubmitting
-                        ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                        : "hover:bg-black hover:text-white"
-                    }`}
-                  >
-                    {isSubmitting ? "Sending..." : "Submit"}
-                  </button>
-                </div>
-              </div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`rounded-md border border-primary px-6 py-2 text-sm font-medium transition-all duration-300 ${
+                  isSubmitting
+                    ? "cursor-not-allowed bg-gray-100 text-gray-500"
+                    : "hover:bg-primary hover:text-white"
+                }`}
+              >
+                {isSubmitting ? "Sending..." : "Submit"}
+              </button>
             </form>
-          </div>
-          {/* 2 */}
-          <div>
-            <p className="text-xl mb-6 ">Locate Us</p>
-
-            <ul className="flex flex-col gap-3 text-xs">
-              <Link className="hover:underline">Contact us</Link>
-              <Link className="hover:underline">Our Location</Link>
-            </ul>
           </div>
         </div>
 
-        <div className="mt-8 pt-6 text-gray-400 text-sm text-center">
+        <div className="mt-8 border-t border-primary/10 pt-5 text-center text-sm text-primary/60">
           <p>
             Copyright © {new Date().getFullYear()} Way Beirut rights reserved.
-            Designed by Brand&
+            Designed by Brand&amp;
           </p>
         </div>
       </Container>

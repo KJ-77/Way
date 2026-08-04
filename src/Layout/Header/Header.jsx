@@ -8,6 +8,8 @@ import blackLogo from "assets/black-logo.webp";
 import whiteLogo from "assets/white-logo.webp";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import AuthContext from "Context/AuthContext";
+import NavDropdown from "./NavDropdown";
+
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -46,6 +48,29 @@ const Header = () => {
       navigate(`/#${sectionId}`);
     }
   };
+
+  // Shared nav model — the desktop dropdowns and the mobile drawer render from
+  // the same definitions so the two menus can't drift apart.
+  const communityItems = [
+    { label: "Our Space", onClick: () => scrollToSection("our-space") },
+    { label: "Our Tutors", onClick: () => scrollToSection("our-tutors") },
+    { label: "Our CoffeeBar", onClick: () => scrollToSection("our-coffeebar") },
+  ];
+
+  // "Studio" merges what used to be two separate top-level entries (Classes and
+  // Schedule). Classes is surfaced as "Packages" per the studio's naming.
+  const studioItems = [
+    { label: "Packages", to: "/classes" },
+    { label: "Schedule", to: "/schedule" },
+  ];
+
+  // Shared class string for the plain top-level links, so Events/Contact match
+  // the dropdown triggers exactly (same size, same weight, no italics).
+  const topLinkClasses = `text-base font-medium block transition-colors duration-300 ${
+    showWhiteOnHome
+      ? "text-white hover:text-gray-300"
+      : "text-gray-900 hover:text-gray-600"
+  }`;
 
   // Handle hash navigation when component mounts or location changes
   useEffect(() => {
@@ -96,9 +121,6 @@ const Header = () => {
 
   return (
     <>
-      {/* Placeholder div to prevent content jump when header becomes fixed */}
-      {/* {isScrolled && <div style={{ height: isScrolled ? "0px" : "0px" }} />} */}
-
       <header
         className={`transition-all duration-300 ease-in-out h-max z-50 ${positionClasses} ${
           isScrolled
@@ -109,11 +131,12 @@ const Header = () => {
         }`}
       >
         <Container className="Container">
+          {/* Everything is vertically centered now. The old `lg:items-start`
+              existed so the always-visible sub-links had room below the nav —
+              with the dropdowns on hover, centering reads better. */}
           <div
-            className={`flex justify-between transition-all duration-300 ${
-              isScrolled
-                ? "py-1 items-center"
-                : "lg:py-8 items-center  lg:items-start"
+            className={`flex items-center justify-between transition-all duration-300 ${
+              isScrolled ? "py-1" : "lg:py-8"
             }`}
           >
             <Link to="/" className="flex-shrink-0 flex items-center">
@@ -130,167 +153,34 @@ const Header = () => {
               />
             </Link>
 
-            <nav className="hidden lg:flex space-x-14 h-max">
-              <div className="relative ">
-                <button
-                  onClick={() => scrollToSection("our-space")}
-                  className={`${
-                    isScrolled
-                      ? "text-gray-900"
-                      : showWhiteOnHome
-                        ? "text-white"
-                        : "text-gray-900"
-                  } hover:${
-                    showWhiteOnHome ? "text-gray-300" : "text-gray-600"
-                  } text-sm font-medium block transition-all duration-300`}
-                >
-                  Community
-                </button>
-                {!isScrolled && (
-                  <ul
-                    className={`absolute top-[100%] mt-6 text-xs italic   flex flex-col gap-y-1.5 left-0 min-w-max min-h-max ${
-                      showWhiteOnHome ? "text-white" : "text-black"
-                    } ${isScrolled ? "hidden" : "block"}`}
-                  >
-                    <li>
-                      <button
-                        onClick={() => scrollToSection("our-space")}
-                        className="hover:text-secondary transition-colors duration-300 cursor-pointer"
-                      >
-                        Our Space
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => scrollToSection("our-tutors")}
-                        className="hover:text-secondary transition-colors duration-300 cursor-pointer"
-                      >
-                        Our Tutors
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => scrollToSection("our-coffeebar")}
-                        className="hover:text-secondary transition-colors duration-300 cursor-pointer"
-                      >
-                        Our CoffeeBar
-                      </button>
-                    </li>
-                  </ul>
-                )}
-              </div>
-              <div className="relative">
-                <Link
-                  to="/classes"
-                  className={`${
-                    isScrolled
-                      ? "text-gray-900"
-                      : showWhiteOnHome
-                        ? "text-white"
-                        : "text-gray-900"
-                  } hover:${
-                    showWhiteOnHome ? "text-gray-300" : "text-gray-600"
-                  }  font-medium block transition-all duration-300 ${
-                    isScrolled ? "text-sm" : "text-sm"
-                  }`}
-                >
-                  Classes
-                </Link>
-                {!isScrolled && (
-                  <ul
-                    className={`absolute top-[100%] mt-6 text-xs italic   flex flex-col gap-y-1.5 left-0 min-w-max min-h-max ${
-                      showWhiteOnHome ? "text-white" : "text-black"
-                    } ${isScrolled ? "hidden" : "block"}`}
-                  >
-                    <li>
-                      <Link
-                        to="/classes"
-                        className="hover:text-secondary transition-colors duration-300 block"
-                      >
-                        View classes
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/classes"
-                        className="hover:text-secondary transition-colors duration-300 block"
-                      >
-                        Book now
-                      </Link>
-                    </li>
-                  </ul>
-                )}
-              </div>
-              <Link
-                to="/schedule"
-                className={`${
-                  isScrolled
-                    ? "text-gray-900"
-                    : showWhiteOnHome
-                      ? "text-white"
-                      : "text-gray-900"
-                } hover:${
-                  showWhiteOnHome ? "text-gray-300" : "text-gray-600"
-                }  font-medium block transition-all duration-300 ${
-                  isScrolled ? "text-sm" : "text-sm"
-                }`}
-              >
-                Schedule
-              </Link>
-              <Link
-                to="/events"
-                className={`${
-                  isScrolled
-                    ? "text-gray-900"
-                    : showWhiteOnHome
-                      ? "text-white"
-                      : "text-gray-900"
-                } hover:${
-                  showWhiteOnHome ? "text-gray-300" : "text-gray-600"
-                }  font-medium block transition-all duration-300 ${
-                  isScrolled ? "text-sm" : "text-sm"
-                }`}
-              >
+            <nav className="hidden lg:flex items-center space-x-12 h-max">
+              <NavDropdown
+                label="Community"
+                items={communityItems}
+                light={showWhiteOnHome}
+              />
+              <NavDropdown
+                label="Studio"
+                items={studioItems}
+                light={showWhiteOnHome}
+              />
+              <Link to="/events" className={topLinkClasses}>
                 Events
               </Link>
-              <Link
-                to="/events"
-                className={`${
-                  isScrolled
-                    ? "text-gray-900"
-                    : showWhiteOnHome
-                      ? "text-white"
-                      : "text-gray-900"
-                } hover:${
-                  showWhiteOnHome ? "text-gray-300" : "text-gray-600"
-                }  font-medium block transition-all duration-300 ${
-                  isScrolled ? "text-sm" : "text-sm"
-                }`}
-              >
+              <Link to="/events" className={topLinkClasses}>
                 Contact
               </Link>
+              {/* Routes to the "coming soon" placeholder until the real catalog
+                  is built. */}
               <Link
                 to="/shop"
-                className={`relative flex items-center h-max gap-x-2 group ${
-                  isScrolled
-                    ? "text-gray-900"
-                    : showWhiteOnHome
-                      ? "text-white border border-white px-10 py-[2px] rounded-xl hover:bg-white hover:text-black"
-                      : "text-gray-900 border border-black-900 px-6 py-[2px] rounded-xl"
-                } hover:${
-                  showWhiteOnHome ? "text-gray-300" : "text-gray-600"
-                }  font-medium block transition-all duration-300 ${
-                  isScrolled
-                    ? "text-sm border border-black px-6 py-[2px] rounded-xl"
-                    : "text-sm"
+                className={`relative flex items-center h-max gap-x-2 text-base font-medium rounded-xl px-8 py-[3px] transition-colors duration-300 ${
+                  showWhiteOnHome
+                    ? "text-white border border-white hover:bg-white hover:text-primary"
+                    : "text-gray-900 border border-black hover:bg-black hover:text-white"
                 }`}
               >
                 Shop
-                {!isScrolled && (
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <ArrowRight />
-                  </span>
-                )}
               </Link>
 
               {/* Auth control — shows Login button when logged out, user dropdown when logged in */}
@@ -307,29 +197,17 @@ const Header = () => {
               <div className="flex flex-col space-y-1.5 w-6">
                 <span
                   className={`block h-0.5 w-6 transform transition-all duration-300 ${
-                    isScrolled
-                      ? "bg-black"
-                      : showWhiteOnHome
-                        ? "bg-white"
-                        : "bg-black"
+                    showWhiteOnHome ? "bg-white" : "bg-black"
                   } group-hover:scale-110`}
                 ></span>
                 <span
                   className={`block h-0.5 w-4 transform transition-all duration-300 ${
-                    isScrolled
-                      ? "bg-black"
-                      : showWhiteOnHome
-                        ? "bg-white"
-                        : "bg-black"
+                    showWhiteOnHome ? "bg-white" : "bg-black"
                   } group-hover:w-6 group-hover:scale-110`}
                 ></span>
                 <span
                   className={`block h-0.5 w-6 transform transition-all duration-300 ${
-                    isScrolled
-                      ? "bg-black"
-                      : showWhiteOnHome
-                        ? "bg-white"
-                        : "bg-black"
+                    showWhiteOnHome ? "bg-white" : "bg-black"
                   } group-hover:scale-110`}
                 ></span>
               </div>
@@ -345,12 +223,12 @@ const Header = () => {
           onClick={() => setIsDrawerOpen(false)}
         >
           <div
-            className={`fixed top-0 right-0 h-full w-80 bg-white/95 backdrop-blur-xl shadow-2xl transform transition-all duration-500 ease-out z-50 border-l border-gray-200/50 ${
+            className={`fixed top-0 right-0 h-full w-80 bg-white/95 backdrop-blur-xl shadow-2xl transform transition-all duration-500 ease-out z-50 border-l border-gray-200/50 overflow-y-auto ${
               isDrawerOpen ? "translate-x-0" : "translate-x-full"
             }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-8 h-full flex flex-col relative">
+            <div className="p-8 min-h-full flex flex-col relative">
               {/* Close button */}
               <div className="absolute top-6 right-6">
                 <button
@@ -367,7 +245,7 @@ const Header = () => {
               </div>
 
               {/* Header */}
-              <div className="pt-4 pb-12">
+              <div className="pt-4 pb-10">
                 <div className="w-12 h-1 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full mb-6"></div>
                 <h2 className="text-2xl font-light text-gray-900 tracking-wide">
                   Navigation
@@ -377,84 +255,31 @@ const Header = () => {
                 </p>
               </div>
 
-              {/* Navigation */}
-              <nav className="flex flex-col space-y-2 flex-1">
-                {[
-                  {
-                    action: () => scrollToSection("our-space"),
-                    label: "Community",
-                    delay: "100ms",
-                  },
-                  { to: "/classes", label: "Classes", delay: "200ms" },
-                  { to: "/schedule", label: "Schedule", delay: "250ms" },
-                  { to: "/events", label: "Events", delay: "300ms" },
-                  { to: "/shop", label: "Shop", delay: "400ms" },
-                  {
-                    to: "/auth/register",
-                    label: "Become a Member",
-                    delay: "500ms",
-                  },
-                ].map((item, index) => {
-                  const handleClick = () => {
-                    setIsDrawerOpen(false);
-                    if (item.action) {
-                      item.action();
-                    }
-                  };
-
-                  if (item.to) {
-                    return (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        className={`group relative py-4 px-6 rounded-2xl text-gray-700 hover:text-gray-900 font-medium text-lg tracking-wide transition-all duration-300 hover:bg-gray-50/80 hover:shadow-sm transform hover:translate-x-2 ${
-                          isDrawerOpen ? "animate-in slide-in-from-right-4" : ""
-                        }`}
-                        style={{
-                          animationDelay: isDrawerOpen ? item.delay : "0ms",
-                          animationDuration: "600ms",
-                          animationFillMode: "both",
-                        }}
-                        onClick={() => setIsDrawerOpen(false)}
-                      >
-                        <span className="relative z-10">{item.label}</span>
-                        <div className="absolute left-0 top-1/2 w-1 h-8 bg-gradient-to-b from-gray-300 to-gray-400 rounded-full transform -translate-y-1/2 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0 translate-x-2">
-                          <ArrowRight
-                            size={16}
-                            weight="bold"
-                            className="text-gray-400"
-                          />
-                        </div>
-                      </Link>
-                    );
-                  } else {
-                    return (
-                      <button
-                        key={item.label}
-                        className={`group relative py-4 px-6 rounded-2xl text-gray-700 hover:text-gray-900 font-medium text-lg tracking-wide transition-all duration-300 hover:bg-gray-50/80 hover:shadow-sm transform hover:translate-x-2 text-left ${
-                          isDrawerOpen ? "animate-in slide-in-from-right-4" : ""
-                        }`}
-                        style={{
-                          animationDelay: isDrawerOpen ? item.delay : "0ms",
-                          animationDuration: "600ms",
-                          animationFillMode: "both",
-                        }}
-                        onClick={handleClick}
-                      >
-                        <span className="relative z-10">{item.label}</span>
-                        <div className="absolute left-0 top-1/2 w-1 h-8 bg-gradient-to-b from-gray-300 to-gray-400 rounded-full transform -translate-y-1/2 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0 translate-x-2">
-                          <ArrowRight
-                            size={16}
-                            weight="bold"
-                            className="text-gray-400"
-                          />
-                        </div>
-                      </button>
-                    );
-                  }
-                })}
+              {/* Navigation — mirrors the desktop structure: Community and Studio
+                  are groups whose children are listed inline (no accordion, so
+                  everything is one tap away on touch). */}
+              <nav className="flex flex-col gap-y-6 flex-1">
+                <MobileNavGroup
+                  label="Community"
+                  items={communityItems}
+                  onNavigate={() => setIsDrawerOpen(false)}
+                />
+                <MobileNavGroup
+                  label="Studio"
+                  items={studioItems}
+                  onNavigate={() => setIsDrawerOpen(false)}
+                />
+                <div className="flex flex-col">
+                  <MobileNavLink to="/events" onNavigate={() => setIsDrawerOpen(false)}>
+                    Events
+                  </MobileNavLink>
+                  <MobileNavLink to="/events" onNavigate={() => setIsDrawerOpen(false)}>
+                    Contact
+                  </MobileNavLink>
+                  <MobileNavLink to="/shop" onNavigate={() => setIsDrawerOpen(false)}>
+                    Shop
+                  </MobileNavLink>
+                </div>
               </nav>
 
               {/* Contact section */}
@@ -495,5 +320,60 @@ const Header = () => {
     </>
   );
 };
+
+// ── Mobile drawer building blocks ──
+// Kept local to the header: they only exist to render the shared nav model in
+// the drawer and have no use anywhere else.
+
+const MOBILE_ROW_CLASSES =
+  "group relative py-3.5 px-5 rounded-2xl text-gray-700 hover:text-gray-900 font-medium text-lg tracking-wide transition-all duration-300 hover:bg-gray-50/80 text-left";
+
+const MobileRowDecoration = () => (
+  <>
+    <div className="absolute left-0 top-1/2 w-1 h-8 bg-gradient-to-b from-gray-300 to-gray-400 rounded-full transform -translate-y-1/2 scale-0 group-hover:scale-100 transition-transform duration-300"></div>
+    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0">
+      <ArrowRight size={16} weight="bold" className="text-gray-400" />
+    </div>
+  </>
+);
+
+const MobileNavLink = ({ to, onNavigate, children }) => (
+  <Link to={to} className={MOBILE_ROW_CLASSES} onClick={onNavigate}>
+    <span className="relative z-10">{children}</span>
+    <MobileRowDecoration />
+  </Link>
+);
+
+// A group header plus its children. The header is a label, not a target — every
+// destination in the group is reachable from the rows beneath it.
+const MobileNavGroup = ({ label, items, onNavigate }) => (
+  <div>
+    <p className="px-5 mb-1 text-xs font-semibold uppercase tracking-widest text-gray-400">
+      {label}
+    </p>
+    <div className="flex flex-col">
+      {items.map((item) =>
+        item.to ? (
+          <MobileNavLink key={item.label} to={item.to} onNavigate={onNavigate}>
+            {item.label}
+          </MobileNavLink>
+        ) : (
+          <button
+            key={item.label}
+            type="button"
+            className={MOBILE_ROW_CLASSES}
+            onClick={() => {
+              onNavigate();
+              item.onClick?.();
+            }}
+          >
+            <span className="relative z-10">{item.label}</span>
+            <MobileRowDecoration />
+          </button>
+        )
+      )}
+    </div>
+  </div>
+);
 
 export default Header;

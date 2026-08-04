@@ -85,87 +85,8 @@ export const mockEventData = {
   ],
 };
 
-// ============================================================
-// PRODUCT CATEGORIES — GET /product-categories
-// ============================================================
-export const mockProductCategories = {
-  data: [
-    { _id: "cat-1", title: "Ceramics" },
-    { _id: "cat-2", title: "Art Prints" },
-    { _id: "cat-3", title: "Handmade Goods" },
-  ],
-};
-
-// ============================================================
-// PRODUCTS — GET /products or /products/category/:id
-// ============================================================
-const allProducts = [
-  {
-    _id: "prod-1",
-    name: "Handmade Mug",
-    description: "A beautifully crafted ceramic mug, perfect for your morning coffee",
-    price: 25,
-    category: "cat-1",
-  },
-  {
-    _id: "prod-2",
-    name: "Ceramic Vase",
-    description: "An elegant wheel-thrown vase with a natural glaze finish",
-    price: 45,
-    category: "cat-1",
-  },
-  {
-    _id: "prod-3",
-    name: "Bowl Set (3 pcs)",
-    description: "Set of three nesting bowls in earthy tones",
-    price: 60,
-    category: "cat-1",
-  },
-  {
-    _id: "prod-4",
-    name: "Beirut Skyline Print",
-    description: "A limited edition watercolor print of the Beirut coastline",
-    price: 35,
-    category: "cat-2",
-  },
-  {
-    _id: "prod-5",
-    name: "Abstract Series I",
-    description: "Minimalist abstract art print on premium paper",
-    price: 30,
-    category: "cat-2",
-  },
-  {
-    _id: "prod-6",
-    name: "Woven Tote Bag",
-    description: "Hand-woven cotton tote with artisan pattern",
-    price: 40,
-    category: "cat-3",
-  },
-  {
-    _id: "prod-7",
-    name: "Clay Incense Holder",
-    description: "Sculptural incense holder crafted from local clay",
-    price: 20,
-    category: "cat-3",
-  },
-  {
-    _id: "prod-8",
-    name: "Ceramic Planter",
-    description: "A charming planter for your favorite succulents",
-    price: 35,
-    category: "cat-1",
-  },
-];
-
-export const mockAllProducts = { data: allProducts };
-
-export const getMockProductsByCategory = (categoryId) => {
-  if (categoryId === "all" || !categoryId) {
-    return { data: allProducts };
-  }
-  return { data: allProducts.filter((p) => p.category === categoryId) };
-};
+// NOTE: the product-category / product fixtures that used to live here were
+// removed with the /shop page. Re-add them if the shop comes back.
 
 // ============================================================
 // REGISTRATIONS — GET /registrations/my-registrations

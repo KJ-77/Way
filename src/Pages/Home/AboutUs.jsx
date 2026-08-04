@@ -5,7 +5,6 @@ import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
 import { IMAGE_URL, MOCK_MODE } from "Utilities/BASE_URL";
 import { resolveImageUrl } from "data/mockImages";
 import aboutUsBannerImage from "assets/images/about-us/about-us-image.webp";
-import Button from "Components/form/Button";
 
 // Import Swiper styles
 import "swiper/css";
@@ -46,14 +45,6 @@ const AboutUs = ({ aboutUsData }) => {
               : null}
           </h2>
           <p className="lg:w-3/4 text-xl text-primary">{page_description}</p>
-
-          {/* Action Button */}
-          <div className="mt-10">
-            <Button to="/classes" variant="link" size="sm">
-              Book now
-              <ArrowRight size={14} />
-            </Button>
-          </div>
         </div>
 
         {/* Banner Image */}

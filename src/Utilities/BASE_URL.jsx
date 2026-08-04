@@ -16,6 +16,7 @@ export const MOCK_MODE = true;
 const LIVE_ENDPOINT_PREFIXES = [
   "/schedule",
   "/packages",
+  "/class-types",
   "/sessions",
   "/items",
 ];

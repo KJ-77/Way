@@ -1,26 +1,14 @@
 import { useState } from "react";
 import { shouldUseMock } from "Utilities/BASE_URL";
 import { apiFetch } from "../lib/api";
-import {
-  mockHomeData,
-  mockEventData,
-  mockProductCategories,
-  mockAllProducts,
-  getMockProductsByCategory,
-} from "data/mockData";
+import { mockHomeData, mockEventData } from "data/mockData";
 
 // Mock data resolver for GET endpoints still backed by fixtures.
-// /schedule is NOT in here — it always hits the real backend via
-// LIVE_ENDPOINT_PREFIXES in Utilities/BASE_URL.
+// /schedule, /packages and /class-types are NOT in here — they always hit the
+// real backend via LIVE_ENDPOINT_PREFIXES in Utilities/BASE_URL.
 const getMockData = (url) => {
   if (url === "/home") return mockHomeData;
   if (url === "/event") return mockEventData;
-  if (url === "/product-categories") return mockProductCategories;
-  if (url === "/products") return mockAllProducts;
-
-  // /products/category/:id
-  const categoryMatch = url.match(/^\/products\/category\/(.+)$/);
-  if (categoryMatch) return getMockProductsByCategory(categoryMatch[1]);
 
   // Fallback
   return { data: [] };
