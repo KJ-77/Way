@@ -18,7 +18,10 @@ const AboutUs = ({ aboutUsData }) => {
     aboutUsData;
 
   return (
-    <section id="our-space" className="bg-white py-secondary lg:pt-20 lg:pb-primary">
+    <section
+      id="our-space"
+      className="bg-white py-secondary lg:pt-20 lg:pb-primary"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Title and Description */}
         <div className="mb-10 lg:mb-24 lg:w-3/4 mx-auto">
@@ -83,7 +86,11 @@ const AboutUs = ({ aboutUsData }) => {
                       {coffee_bar.gallery.map((image, index) => (
                         <SwiperSlide key={index}>
                           <img
-                            src={MOCK_MODE ? resolveImageUrl(image, IMAGE_URL) : `${IMAGE_URL}${image}`}
+                            src={
+                              MOCK_MODE
+                                ? resolveImageUrl(image, IMAGE_URL)
+                                : `${IMAGE_URL}${image}`
+                            }
                             alt={`Coffee Bar ${index + 1}`}
                             className="w-full h-[280px] sm:h-[350px] md:h-[400px] lg:aspect-[4/5] lg:h-auto object-cover"
                           />
@@ -142,7 +149,11 @@ const AboutUs = ({ aboutUsData }) => {
                       {our_tutors.gallery.map((image, index) => (
                         <SwiperSlide key={index}>
                           <img
-                            src={MOCK_MODE ? resolveImageUrl(image, IMAGE_URL) : `${IMAGE_URL}${image}`}
+                            src={
+                              MOCK_MODE
+                                ? resolveImageUrl(image, IMAGE_URL)
+                                : `${IMAGE_URL}${image}`
+                            }
                             alt={`Our Tutors ${index + 1}`}
                             className="w-full h-[280px] sm:h-[350px] md:h-[400px] lg:aspect-[4/5] lg:h-auto object-cover object-[50%_20%] lg:object-center"
                           />

@@ -19,13 +19,13 @@ import heroSlide2 from "assets/images/landing/hero-2.webp";
 import heroSlide3 from "assets/images/landing/hero-3.webp";
 import heroSlide4 from "assets/images/landing/hero-4.webp";
 import wheelthrowingImage from "assets/images/home/wheelthrowing.webp";
-import readyMadeImage from "assets/images/home/ready-made.jpg";
-import handbuildingImage from "assets/images/home/handbuilding.png";
-import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.png";
+import readyMadeImage from "assets/images/home/ready-made.webp";
+import handbuildingImage from "assets/images/home/handbuilding.webp";
+import handbuildingMasteryImage from "assets/images/home/handbuilding-mastery.webp";
 import workshopImage from "assets/images/home/workshop-image.webp";
-import studioImage from "assets/images/home/studio-picture.jpg";
-import ourProductsImage from "assets/images/home/our-products.jpeg";
-import tutorIllustration from "assets/images/home/illustration.webp";
+import studioImage from "assets/images/home/studio-picture.webp";
+import ourProductsImage from "assets/images/home/bento-2.webp";
+import tutorsImage from "assets/images/home/bento-3.webp";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation, Autoplay, EffectFade } from "swiper/modules";
 import "swiper/css";
@@ -189,17 +189,12 @@ const Home = () => {
               />
             </div>
 
-            {/* Bottom Right - Tutors illustration.
-                This one is a square 1080×1080 drawing, not a landscape photo, so
-                object-cover would crop the head and table off. object-contain
-                keeps the whole artwork and the tile takes the illustration's own
-                background colour (#c7b2a1), so the letterboxing is invisible and
-                it reads as one continuous panel. */}
-            <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-[#c7b2a1]">
+            {/* Bottom Right - Tutors */}
+            <div className="rounded-2xl lg:rounded-[32px] overflow-hidden h-[250px] lg:h-[300px] bg-gray-200">
               <img
-                src={tutorIllustration}
-                alt="Illustration of a potter painting a mug"
-                className="w-full h-full object-contain"
+                src={tutorsImage}
+                alt="Two students laughing together while shaping clay at the studio worktable"
+                className="w-full h-full object-cover object-center"
               />
             </div>
           </div>
@@ -323,9 +318,10 @@ const Home = () => {
                     <span>No Booking Required!</span>
                   </div>
                   <p className="text-gray-700 text-sm mb-4 flex-grow">
-                    Choose from a selection of cups, plates, and more, and enjoy the freedom to paint 
-                    and personalize each piece your way. No experience needed, just come in, pick your piece, 
-                    and start creating.
+                    Choose from a selection of cups, plates, and more, and enjoy
+                    the freedom to paint and personalize each piece your way. No
+                    experience needed, just come in, pick your piece, and start
+                    creating.
                   </p>
                 </div>
               </SwiperSlide>
