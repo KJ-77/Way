@@ -10,14 +10,35 @@
 // Coffee bar photos — real bundled assets. Imported (not inline "placeholder:"
 // strings) so Vite fingerprints them and emits hashed URLs; they then flow
 // through resolveImageUrl() untouched, since they don't start with "placeholder:".
-import coffeeBarInterior from "assets/images/home/coffee-bar-interior.webp";
-import coffeeBarCounter from "assets/images/home/coffee-bar-counter.webp";
-import coffeeBarSeating from "assets/images/home/coffee-bar-seating.webp";
+// Converted from the studio's iPhone .heic originals (see CLAUDE.local.md).
+import coffeeBarMarbleBar from "assets/images/home/coffee-bar-marble-bar.webp";
+import coffeeBarMural from "assets/images/home/coffee-bar-mural.webp";
+import coffeeBarCommunalTable from "assets/images/home/coffee-bar-communal-table.webp";
+import coffeeBarWindowSeating from "assets/images/home/coffee-bar-window-seating.webp";
+import coffeeBarServiceCounter from "assets/images/home/coffee-bar-service-counter.webp";
 
 // Tutor portraits — same bundled-asset passthrough as the coffee bar images above.
 import instructor1 from "assets/images/home/instructor-1.webp";
 import instructor2 from "assets/images/home/instructor-2.webp";
 import instructor3 from "assets/images/home/instructor-3.webp";
+
+// Past-event photo sets. Each event below carries an `images` array rather than
+// the backend's single `image` field; EventCard renders whichever it finds, so
+// this stays compatible with the live /event payload shape.
+import glassBlowing1 from "assets/images/events/glass-blowing-1.webp";
+import glassBlowing2 from "assets/images/events/glass-blowing-2.webp";
+import glassBlowing3 from "assets/images/events/glass-blowing-3.webp";
+
+import rattan1 from "assets/images/events/rattan-1.webp";
+import rattan2 from "assets/images/events/rattan-2.webp";
+import rattan3 from "assets/images/events/rattan-3.webp";
+import rattan4 from "assets/images/events/rattan-4.webp";
+import rattan5 from "assets/images/events/rattan-5.webp";
+
+import sporting1 from "assets/images/events/sporting-1.webp";
+import sporting2 from "assets/images/events/sporting-2.webp";
+import sporting3 from "assets/images/events/sporting-3.webp";
+import sporting4 from "assets/images/events/sporting-4.webp";
 
 // Helper: generate future dates for sessions
 const futureDate = (daysFromNow) => {
@@ -46,7 +67,13 @@ export const mockHomeData = {
     coffee_bar: {
       title: "Our CoffeeBar",
       text: "A cozy space to relax, create, and connect with fellow artists over a warm cup of coffee.",
-      gallery: [coffeeBarInterior, coffeeBarCounter, coffeeBarSeating],
+      gallery: [
+        coffeeBarMarbleBar,
+        coffeeBarMural,
+        coffeeBarCommunalTable,
+        coffeeBarWindowSeating,
+        coffeeBarServiceCounter,
+      ],
     },
     our_tutors: {
       title: "Our Tutors",
@@ -62,25 +89,25 @@ export const mockHomeData = {
 export const mockEventData = {
   data: [
     {
-      _id: "evt-1",
-      title: "Ceramics Night Market",
+      _id: "evt-glass-blowing",
+      title: "Glass Blowing Event",
       content:
-        "<p>Join us for an evening of handmade ceramics, live music, and artisan food. Browse unique pottery pieces from local makers and enjoy the vibrant atmosphere of Way.</p>",
-      image: "placeholder:Ceramics Night Market:1000:400",
+        "<p>A unique studio experience exploring the art of molten glass. Guided by skilled artisans, participants shaped their own pieces through heat, movement, and creativity, discovering a new medium in an inspiring, hands-on setting.</p>",
+      images: [glassBlowing1, glassBlowing2, glassBlowing3],
     },
     {
-      _id: "evt-2",
-      title: "Art & Wine Evening",
+      _id: "evt-rattan",
+      title: "Rattan Workshop",
       content:
-        "<p>Unwind with a glass of wine while painting on canvas in our intimate studio setting. No experience needed — just bring your creative spirit and we'll provide everything else.</p>",
-      image: "placeholder:Art and Wine Evening:1000:400",
+        "<p>A hands-on workshop exploring the art of rattan weaving. Participants learned to shape and weave natural fibers into functional pieces, experiencing the beauty of slow, tactile craftsmanship in a warm studio setting.</p>",
+      images: [rattan1, rattan2, rattan3, rattan4, rattan5],
     },
     {
-      _id: "evt-3",
-      title: "Kids Pottery Workshop",
+      _id: "evt-sporting",
+      title: "Ceramics by the Sea — Sporting",
       content:
-        "<p>A fun, hands-on pottery experience designed for children ages 6-12. Kids will learn basic handbuilding techniques and take home their own creation.</p>",
-      image: "placeholder:Kids Pottery Workshop:1000:400",
+        "<p>A special open-air ceramics experience set at Sporting Beach Club. Surrounded by sea views, participants shaped their own pieces in a relaxed, coastal setting, bringing together creativity, craft, and atmosphere.</p>",
+      images: [sporting1, sporting2, sporting3, sporting4],
     },
   ],
 };

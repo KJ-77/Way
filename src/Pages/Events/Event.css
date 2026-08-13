@@ -36,6 +36,21 @@
   }
 }
 
+/* Event gallery carousel.
+   The pagination bullets sit on top of the photo itself, so they can't use the
+   brand brown that works on the light backgrounds elsewhere in the app — over
+   an arbitrary image that reads as mud. White fills with a soft drop shadow
+   stay legible against both a bright sky and a dark studio interior. */
+.event-gallery .swiper-pagination-bullet {
+  background: #ffffff;
+  opacity: 0.55;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+}
+
+.event-gallery .swiper-pagination-bullet-active {
+  opacity: 1;
+}
+
 /* Fade in animation for cards */
 .fade-in-element {
   opacity: 0;
