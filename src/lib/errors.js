@@ -55,6 +55,9 @@ const CODE_MESSAGES = {
   INVALID_CREDENTIALS: "Wrong email or password. Please try again.",
   SERVER_ERROR: "Something went wrong on our end. Please try again in a moment.",
   DUPLICATE_BOOKING: "You're already booked for this class.",
+  DB_INSERT_FAILED: "We couldn't finish creating your account. Please try again.",
+  ROLLBACK_FAILED:
+    "Your account was partly created but didn't finish saving. Please contact support before trying again.",
 };
 
 // Fallback strings for generic HTTP statuses when no code is set.
@@ -83,6 +86,10 @@ const UNKNOWN_FALLBACK =
 //   3. error.message (better than nothing)
 //   4. fallbackMessage param
 //   5. UNKNOWN_FALLBACK
+//
+// Accepts either a thrown ApiError/Error or a plain parsed response body of the
+// shape `{ ...data, status }` — register.jsx reads the body itself instead of
+// going through throwIfNotOk, so it hands us an object literal.
 export function friendlyError(err, fallbackMessage) {
   console.error("[friendlyError]", err);
 
@@ -91,11 +98,16 @@ export function friendlyError(err, fallbackMessage) {
     return "Couldn't reach the server. Check your internet connection and try again.";
   }
 
-  if (err instanceof ApiError) {
-    if (err.code && CODE_MESSAGES[err.code]) return CODE_MESSAGES[err.code];
-    if (STATUS_MESSAGES[err.status]) return STATUS_MESSAGES[err.status];
-    if (err.message) return err.message;
-  }
+  // Read `code`/`status` structurally rather than gating on `instanceof ApiError`.
+  // A plain body object carries exactly the same two fields, and requiring the
+  // class meant those callers skipped both lookups and fell straight through to
+  // the generic fallback — throwing away the backend's error taxonomy.
+  if (err?.code && CODE_MESSAGES[err.code]) return CODE_MESSAGES[err.code];
+  if (err?.status && STATUS_MESSAGES[err.status]) return STATUS_MESSAGES[err.status];
+
+  // An ApiError's message is already the backend's human-readable string, so it
+  // beats the caller's generic fallback. A bare Error's message usually isn't.
+  if (err instanceof ApiError && err.message) return err.message;
 
   if (err instanceof Error && err.message) {
     return fallbackMessage || err.message;
