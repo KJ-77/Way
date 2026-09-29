@@ -161,6 +161,31 @@ export const AuthProvider = ({ children }) => {
     });
   }, []);
 
+  // Changes the signed-in user's password. Cognito checks the current password
+  // itself; getSession() first swaps an expired ID token for a fresh one, since
+  // changePassword needs a live session. Rejects with Cognito's error `code`
+  // preserved (e.g. NotAuthorizedException = wrong current password) so the page
+  // can point at the right field.
+  const changePassword = useCallback((oldPassword, newPassword) => {
+    return new Promise((resolve, reject) => {
+      const currentUser = userPool.getCurrentUser();
+      if (!currentUser) {
+        return reject(Object.assign(new Error("You're signed out. Please log in again."), { code: "NoSession" }));
+      }
+      currentUser.getSession((sessionErr, session) => {
+        if (sessionErr || !session?.isValid()) {
+          return reject(Object.assign(new Error("Your session has expired. Please log in again."), { code: "NoSession" }));
+        }
+        currentUser.changePassword(oldPassword, newPassword, (err) => {
+          if (err) {
+            return reject(Object.assign(new Error(err.message || "Failed to change password"), { code: err.code || err.name }));
+          }
+          resolve();
+        });
+      });
+    });
+  }, []);
+
   const logoutHandler = useCallback(() => {
     const currentUser = userPool.getCurrentUser();
     if (currentUser) currentUser.signOut();
@@ -175,12 +200,6 @@ export const AuthProvider = ({ children }) => {
   // back-compat with any caller we haven't migrated yet.
   const loginHandler = useCallback(() => {
     console.warn("loginHandler is deprecated; pages should call login(email, password) instead");
-  }, []);
-
-  // Legacy shim — merges fields into the local user object. Real persistence happens
-  // via a backend PUT /users/:id call (TBD when edit-profile is rewired).
-  const updateUserProfile = useCallback((data) => {
-    setUser((prev) => (prev ? { ...prev, ...data } : prev));
   }, []);
 
   return (
@@ -198,10 +217,10 @@ export const AuthProvider = ({ children }) => {
         resendConfirmationCode,
         forgotPassword,
         confirmForgotPassword,
+        changePassword,
         // Legacy API kept for unmigrated consumers
         loginHandler,
         logoutHandler,
-        updateUserProfile,
         token: null, // legacy field — use apiFetch() from lib/api.js instead
       }}
     >

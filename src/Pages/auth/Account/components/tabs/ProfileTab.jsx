@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { PencilSimple, Key, EnvelopeSimple } from "@phosphor-icons/react";
+import { buildWhatsAppUrl } from "Utilities/contact";
 
-// Read-only profile summary + quick actions. The actual edit/password screens
-// still live at /auth/edit-profile and /auth/change-password.
+// Read-only profile summary + quick actions. Password changes happen on
+// /auth/change-password; details are changed by the studio (see below).
 const Field = ({ label, value }) => (
   <div className="py-3 border-b border-gray-100 last:border-b-0">
     <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">{label}</p>
@@ -10,25 +11,38 @@ const Field = ({ label, value }) => (
   </div>
 );
 
-const ActionRow = ({ to, icon: Icon, title, subtitle, cta }) => (
-  <Link
-    to={to}
-    className="flex items-center justify-between py-3 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors group"
-  >
-    <div className="flex items-center gap-x-3">
-      <div className="h-9 w-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-        <Icon size={18} weight="regular" className="text-gray-700" />
+const ROW_CLASSES =
+  "flex items-center justify-between py-3 hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors group";
+
+// An in-app route (`to`) or an external link (`href`, opened in a new tab).
+const ActionRow = ({ to, href, icon: Icon, title, subtitle, cta }) => {
+  const content = (
+    <>
+      <div className="flex items-center gap-x-3">
+        <div className="h-9 w-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+          <Icon size={18} weight="regular" className="text-gray-700" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-gray-900">{title}</p>
+          <p className="text-xs text-gray-500">{subtitle}</p>
+        </div>
       </div>
-      <div>
-        <p className="text-sm font-medium text-gray-900">{title}</p>
-        <p className="text-xs text-gray-500">{subtitle}</p>
-      </div>
-    </div>
-    <span className="text-xs font-medium text-gray-500 group-hover:text-gray-900 transition-colors">
-      {cta}
-    </span>
-  </Link>
-);
+      <span className="text-xs font-medium text-gray-500 group-hover:text-gray-900 transition-colors">
+        {cta}
+      </span>
+    </>
+  );
+
+  return href ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={ROW_CLASSES}>
+      {content}
+    </a>
+  ) : (
+    <Link to={to} className={ROW_CLASSES}>
+      {content}
+    </Link>
+  );
+};
 
 const ProfileTab = ({ user }) => {
   return (
@@ -51,12 +65,19 @@ const ProfileTab = ({ user }) => {
           Account Settings
         </h2>
         <div className="bg-gray-50/60 rounded-xl px-4 sm:px-6 py-2 divide-y divide-gray-100">
+          {/* Not self-service: a client's phone is their login, and the studio's
+              records must stay in step with it — so the studio makes the change.
+              (This used to open a form that only pretended to save.) */}
           <ActionRow
-            to="/auth/edit-profile"
+            href={buildWhatsAppUrl(
+              `Hi Way! I'd like to update my account details. My name on file is ${
+                user?.name || user?.fullName || "—"
+              }.`
+            )}
             icon={PencilSimple}
-            title="Edit profile"
-            subtitle="Update your name, email, or phone"
-            cta="Edit →"
+            title="Update your details"
+            subtitle="Message the studio on WhatsApp to change your name, email, or phone"
+            cta="Message →"
           />
           <ActionRow
             to="/auth/change-password"

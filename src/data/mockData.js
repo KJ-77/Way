@@ -114,71 +114,8 @@ export const mockEventData = {
 
 // NOTE: the product-category / product fixtures that used to live here were
 // removed with the /shop page. Re-add them if the shop comes back.
-
-// ============================================================
-// REGISTRATIONS — GET /registrations/my-registrations
-// ============================================================
-export const mockMyRegistrations = {
-  data: {
-    registrations: [],
-  },
-};
-
-// ============================================================
-// AUTH MOCK RESPONSES
-// ============================================================
-export const getMockLoginResponse = (email) => ({
-  success: true,
-  data: {
-    user: {
-      _id: "user-mock-1",
-      fullName: "Demo User",
-      email: email,
-      phoneNumber: "+961 70 000 000",
-      verified: true,
-    },
-    token: "mock-jwt-token-" + Date.now(),
-  },
-});
-
-export const getMockRegisterResponse = (data) => ({
-  success: true,
-  data: {
-    user: {
-      _id: "user-mock-" + Date.now(),
-      fullName: data.fullName,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-      verified: false,
-    },
-    token: "mock-jwt-token-" + Date.now(),
-  },
-});
-
-// ============================================================
-// GENERIC SUCCESS RESPONSES
-// ============================================================
-export const mockSuccessResponse = {
-  success: true,
-  message: "Operation completed successfully.",
-};
-
-export const mockContactResponse = {
-  success: true,
-  message: "Thank you! Your message has been received.",
-};
-
-export const mockVerifyResponse = {
-  success: true,
-  message: "Email verified successfully!",
-  data: { verified: true },
-};
-
-export const mockRegistrationResponse = {
-  success: true,
-  message: "Registration submitted! Awaiting admin confirmation.",
-  data: {
-    status: "pending",
-    paymentStatus: "unpaid",
-  },
-};
+//
+// The fake auth / "success" responses (login, register, change password, contact
+// form…) were removed on 2026-09-28 with the hooks that served them: they made
+// pages report success for actions that never happened. Every write now goes to
+// Cognito or the real API. Only read-only site content is mocked here.

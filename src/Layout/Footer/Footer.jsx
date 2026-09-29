@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Container from "Components/Container/Container";
 import { WhatsappLogo, InstagramLogo } from "@phosphor-icons/react";
-import BASE_URL, { MOCK_MODE } from "Utilities/BASE_URL";
 import { buildWhatsAppUrl, WAY_WHATSAPP_DISPLAY } from "Utilities/contact";
 import { WAY_INSTAGRAM_URL } from "Utilities/socials";
 
@@ -31,17 +30,16 @@ const Footer = () => {
     email: "",
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState("");
   const [submitStatus, setSubmitStatus] = useState(""); // 'success' or 'error'
 
-  // Auto-hide success message after 2 seconds
+  // Auto-hide the success note after a few seconds
   useEffect(() => {
     if (submitStatus === "success" && submitMessage) {
       const timer = setTimeout(() => {
         setSubmitMessage("");
         setSubmitStatus("");
-      }, 2000);
+      }, 5000);
 
       // Cleanup timer if component unmounts or status changes
       return () => clearTimeout(timer);
@@ -61,17 +59,17 @@ const Footer = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  // Hands the message to the studio's WhatsApp. There's no contact/newsletter
+  // backend: until 2026-09-28 this form showed "Thank you! Your message has been
+  // received." and sent nothing anywhere — every enquiry was silently lost.
+  // WhatsApp is where the studio already answers people, and the sender's number
+  // comes with the chat, so email is optional here.
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     // Basic client-side validation
     if (!formData.firstName.trim()) {
       setSubmitMessage("Please enter your first name");
-      setSubmitStatus("error");
-      return;
-    }
-    if (!formData.email.trim()) {
-      setSubmitMessage("Please enter your email address");
       setSubmitStatus("error");
       return;
     }
@@ -81,55 +79,35 @@ const Footer = () => {
       return;
     }
 
-    setIsSubmitting(true);
-    setSubmitMessage("");
-    setSubmitStatus("");
+    const lines = [
+      `Hi Way! I'm ${formData.firstName.trim()}.`,
+      "",
+      formData.message.trim(),
+      ...(formData.email.trim() ? ["", `Email: ${formData.email.trim()}`] : []),
+    ];
+    const url = buildWhatsAppUrl(lines.join("\n"));
 
-    try {
-      if (MOCK_MODE) {
-        // Simulate network delay
-        await new Promise((r) => setTimeout(r, 600));
-        setSubmitMessage("Thank you! Your message has been received.");
-        setSubmitStatus("success");
-        setFormData({ firstName: "", email: "", message: "" });
-      } else {
-        const response = await fetch(`${BASE_URL}/api/contact`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          setSubmitMessage(data.message);
-          setSubmitStatus("success");
-          setFormData({ firstName: "", email: "", message: "" });
-        } else {
-          setSubmitMessage(
-            data.message || "Failed to send message. Please try again."
-          );
-          setSubmitStatus("error");
-        }
-      }
-    } catch (error) {
-      console.error("Contact form error:", error);
-      setSubmitMessage(
-        "Network error. Please check your connection and try again."
-      );
-      setSubmitStatus("error");
-    } finally {
-      setIsSubmitting(false);
+    // Opened synchronously inside the submit, so it counts as the user's own click
+    // and popup blockers let it through. If one still blocks it, go there in this
+    // tab instead (on phones wa.me hands straight over to the WhatsApp app anyway).
+    const tab = window.open(url, "_blank");
+    if (tab) {
+      tab.opener = null; // the opened page gets no handle on this site
+    } else {
+      window.location.href = url;
+      return;
     }
+
+    setSubmitMessage("WhatsApp is open with your message — press Send there and we'll get back to you.");
+    setSubmitStatus("success");
+    setFormData({ firstName: "", email: "", message: "" });
   };
 
   return (
     <footer className="border-t border-primary/10 py-10 text-primary">
       <Container className="Container">
         {/* Two columns from md up: identity + contact on the left, the
-            newsletter form on the right. Everything stacks on mobile. */}
+            message form on the right. Everything stacks on mobile. */}
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-12">
           {/* Identity, contact channels, socials */}
           <div>
@@ -183,9 +161,9 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Newsletter / contact form */}
+          {/* Contact form — hands off to WhatsApp (see handleSubmit) */}
           <div>
-            <p className="text-lg font-medium">Subscribe to newsletter</p>
+            <p className="text-lg font-medium">Send us a message</p>
 
             <form onSubmit={handleSubmit} className="mt-4 space-y-3">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -204,12 +182,11 @@ const Footer = () => {
                     value={formData.firstName}
                     onChange={handleInputChange}
                     placeholder="Your name"
-                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm" htmlFor="footer-email">
-                    Email
+                    Email (optional)
                   </label>
                   <input
                     className={FIELD_CLASSES}
@@ -219,7 +196,6 @@ const Footer = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="you@example.com"
-                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -236,7 +212,6 @@ const Footer = () => {
                   value={formData.message}
                   onChange={handleInputChange}
                   placeholder="Your message here"
-                  disabled={isSubmitting}
                 />
               </div>
 
@@ -255,14 +230,10 @@ const Footer = () => {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className={`rounded-md border border-primary px-6 py-2 text-sm font-medium transition-all duration-300 ${
-                  isSubmitting
-                    ? "cursor-not-allowed bg-gray-100 text-gray-500"
-                    : "hover:bg-primary hover:text-white"
-                }`}
+                className="inline-flex items-center gap-x-2 rounded-md border border-primary px-6 py-2 text-sm font-medium transition-all duration-300 hover:bg-primary hover:text-white"
               >
-                {isSubmitting ? "Sending..." : "Submit"}
+                <WhatsappLogo size={18} weight="fill" />
+                Send on WhatsApp
               </button>
             </form>
           </div>

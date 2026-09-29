@@ -9,7 +9,6 @@ import Login from "Pages/auth/login";
 import Register from "Pages/auth/register";
 import Account from "Pages/auth/Account/Account";
 import Verify from "Pages/auth/verify";
-import EditProfile from "Pages/auth/edit-profile";
 import ChangePassword from "Pages/auth/change-password";
 import SendVerificationCode from "Pages/auth/send-verification-code";
 import VerifyResetCode from "Pages/auth/verify-reset-code";
@@ -77,8 +76,19 @@ const App = () => {
             }
           />
           <Route path="/auth/profile" element={<Navigate to="/auth/account" replace />} />
-          <Route path="/auth/edit-profile" element={<EditProfile />} />
-          <Route path="/auth/change-password" element={<ChangePassword />} />
+          {/* Editing your own details isn't self-service (the phone number is the
+              login of admin-created clients, and the DB must stay in step with
+              Cognito) — the Profile tab links to the studio's WhatsApp instead.
+              Old links land on the account page rather than a dead form. */}
+          <Route path="/auth/edit-profile" element={<Navigate to="/auth/account" replace />} />
+          <Route
+            path="/auth/change-password"
+            element={
+              <ProtectedRoute>
+                <ChangePassword />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/auth/verify" element={<Verify />} />
           <Route
             path="/auth/send-verification-code"

@@ -1,13 +1,19 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "Components/form/Button";
 import PasswordInput from "form/Inputs/PasswordInput";
 import useInput from "form/Hooks/user-input";
-import usePost from "Hooks/usePost";
 import AuthContext from "Context/AuthContext";
 
+// Changes the password for real, through Cognito (AuthContext.changePassword).
+// Until 2026-09-28 this page posted to a mock endpoint and showed "Password changed
+// successfully" while the old password kept working.
+//
+// Signed-out visitors never reach it: the route is wrapped in <ProtectedRoute>
+// (App.jsx). There's no "verify your email first" gate any more — Cognito doesn't
+// need one, and it locked out every client created without an email address.
 const ChangePassword = () => {
-  const { user, token } = useContext(AuthContext);
+  const { changePassword } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const oldPassword = useInput((val) => val.length >= 8);
@@ -16,20 +22,11 @@ const ChangePassword = () => {
     (val) => val === newPassword.value && val.length >= 8
   );
 
-  const { loading, error, postData } = usePost();
+  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-
-  // Redirect if user is not logged in or not verified
-  useEffect(() => {
-    if (!user) {
-      navigate("/auth/login");
-    } else if (!user.verified) {
-      navigate("/auth/account");
-    }
-  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,79 +50,41 @@ const ChangePassword = () => {
     }
 
     try {
+      setLoading(true);
       setFieldErrors({});
-      const response = await postData(
-        "/user/change-password",
-        {
-          oldPassword: oldPassword.value,
-          newPassword: newPassword.value,
-          confirmPassword: confirmPassword.value,
-        },
-        token
-      );
+      await changePassword(oldPassword.value, newPassword.value);
 
-      if (response.success) {
-        setSuccessMessage("Password changed successfully");
+      setSuccessMessage("Password changed successfully");
 
-        // Clear form
-        oldPassword.reset();
-        newPassword.reset();
-        confirmPassword.reset();
+      // Clear form
+      oldPassword.reset();
+      newPassword.reset();
+      confirmPassword.reset();
 
-        // Navigate back to profile after a short delay
-        setTimeout(() => {
-          navigate("/auth/account");
-        }, 2000);
-      }
+      // Navigate back to profile after a short delay
+      setTimeout(() => {
+        navigate("/auth/account");
+      }, 2000);
     } catch (err) {
       console.error("Change password error:", err);
 
-      if (err?.message) {
-        setErrorMessage(err.message);
+      // Cognito names the failure precisely, so point at the field it's about.
+      if (err.code === "NotAuthorizedException" && /incorrect/i.test(err.message)) {
+        // Wrong current password ("Incorrect username or password.").
+        setFieldErrors({ oldPassword: "Incorrect current password." });
+      } else if (err.code === "InvalidPasswordException" || err.code === "InvalidParameterException") {
+        // The new password breaks the pool's rules — Cognito's text says which.
+        setFieldErrors({ newPassword: err.message });
+      } else if (err.code === "LimitExceededException") {
+        setErrorMessage("Too many attempts. Please wait a few minutes and try again.");
+      } else {
+        // Expired session, network failure, anything else.
+        setErrorMessage(err.message || "Something went wrong. Please try again.");
       }
-
-      // For password-specific errors
-      if (err?.message?.toLowerCase().includes("password")) {
-        if (err?.message?.toLowerCase().includes("old")) {
-          setFieldErrors({
-            ...fieldErrors,
-            oldPassword: "Incorrect current password.",
-          });
-        } else if (err?.message?.toLowerCase().includes("new")) {
-          setFieldErrors({
-            ...fieldErrors,
-            newPassword: err.message,
-          });
-        } else if (err?.message?.toLowerCase().includes("confirm")) {
-          setFieldErrors({
-            ...fieldErrors,
-            confirmPassword: err.message,
-          });
-        } else {
-          setFieldErrors({
-            ...fieldErrors,
-            newPassword: err.message,
-          });
-        }
-      }
-
-      if (err?.response?.data?.errors) {
-        setFieldErrors(err.response.data.errors);
-      }
+    } finally {
+      setLoading(false);
     }
   };
-
-  if (!user || !user.verified) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 text-center">
-          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-md p-4">
-            <p>You need to verify your email before changing your password.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="lg:min-h-screen flex items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
@@ -138,7 +97,7 @@ const ChangePassword = () => {
         </div>
 
         <div className="mt-8">
-          {error || errorMessage ? (
+          {errorMessage ? (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-800 rounded-md p-4">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -159,12 +118,7 @@ const ChangePassword = () => {
                   <h3 className="text-sm font-medium text-red-800">
                     Password change failed
                   </h3>
-                  <div className="mt-1 text-sm text-red-700">
-                    {errorMessage ||
-                      (typeof error === "string"
-                        ? error
-                        : "Please check your information and try again.")}
-                  </div>
+                  <div className="mt-1 text-sm text-red-700">{errorMessage}</div>
                 </div>
               </div>
             </div>

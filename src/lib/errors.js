@@ -53,11 +53,11 @@ const CODE_MESSAGES = {
   USERNAME_EXISTS: "An account already exists with these details.",
   USER_NOT_FOUND: "We couldn't find that account.",
   INVALID_CREDENTIALS: "Wrong email or password. Please try again.",
-  SERVER_ERROR: "Something went wrong on our end. Please try again in a moment.",
+  SERVER_ERROR: "Something went wrong on our end. Please try again — if it keeps happening, contact the studio.",
   DUPLICATE_BOOKING: "You're already booked for this class.",
   DB_INSERT_FAILED: "We couldn't finish creating your account. Please try again.",
   ROLLBACK_FAILED:
-    "Your account was partly created but didn't finish saving. Please contact support before trying again.",
+    "Your account was partly created but didn't finish saving. Please contact the studio before trying again.",
 };
 
 // Fallback strings for generic HTTP statuses when no code is set.
@@ -68,14 +68,14 @@ const STATUS_MESSAGES = {
   404: "We couldn't find what you were looking for.",
   409: "This conflicts with existing data.",
   429: "Too many requests. Please wait a moment and try again.",
-  500: "Something went wrong on our end. Please try again in a moment.",
+  500: "Something went wrong on our end. Please try again — if it keeps happening, contact the studio.",
   502: "The server is temporarily unavailable. Please try again shortly.",
   503: "The server is temporarily unavailable. Please try again shortly.",
   504: "The server took too long to respond. Please try again.",
 };
 
 const UNKNOWN_FALLBACK =
-  "Something went wrong. Please try again, or contact support if this keeps happening.";
+  "Something went wrong. Please try again — if it keeps happening, contact the studio.";
 
 // Translates any error into a user-facing string. Always logs raw to console first
 // so devtools sees the unmodified error.
